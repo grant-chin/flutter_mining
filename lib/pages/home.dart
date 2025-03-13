@@ -46,6 +46,8 @@ class _MyHomePageState extends State<MyHomePage> {
             backgroundColor: Color.fromRGBO(15, 15, 18, 1),
             selectedItemColor: Colors.white,
             unselectedItemColor: Color.fromRGBO(249, 249, 249, 0.2),
+            selectedLabelStyle: TextStyle(fontFamily: 'Lexend'),
+            unselectedLabelStyle: TextStyle(fontFamily: 'Lexend'),
             items: [
               BottomNavigationBarItem(
                 icon: getItemIcon('assets/images/tabbar/item_default.png'),

@@ -50,7 +50,6 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
                   child: Text('Select the item you want to mint', style: TextStyle(
                     color: Color.fromRGBO(249, 249, 249, 0.8),
                     fontSize: 16,
-                    fontFamily: 'Lexend'
                   ))
                 )
               ],
