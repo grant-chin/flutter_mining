@@ -63,7 +63,9 @@ flutter:
     - assets/icons/
     - assets/images/avator/
     - assets/images/tabbar/
-    - assets/images/ikon/
+    - assets/images/item/
+    - assets/images/mine/
+    - assets/images/tasks/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -76,7 +78,11 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
+  fonts:
+    - family: Lexend
+      fonts: 
+        - asset: assets/fonts/Lexend-VariableFont_wght.ttf
+          style: italic
   #   - family: Schyler
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf

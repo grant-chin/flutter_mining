@@ -12,40 +12,22 @@ class MinePage extends StatefulWidget {
 class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin {
   int _counter = 0;
   int _level = 1;
+  bool isClick = false;
 
   /// 点击挖矿增加金币
   void _incrementCounter() {
     setState(() {
+      isClick = true;
       _counter += 5 * _level;
     });
   }
   
   @override
   Widget build(BuildContext context) {
-      // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      // floatingActionButton: Container(
-      //   width: MediaQuery.of(context).size.width,
-      //   height: 96,
-      //   padding: EdgeInsets.fromLTRB(12, 16, 12, 16),
-      //   decoration: BoxDecoration(
-      //     borderRadius: BorderRadius.circular(12)
-      //   ),
-      //   child: FloatingActionButton(
-      //     onPressed: () {
-      //       print('Mine!');
-      //     },
-      //     elevation: 5,
-      //     backgroundColor: Color.fromRGBO(112, 21, 239, 1),
-      //     child: Container(
-      //       padding: EdgeInsets.all(0),
-      //       child: Text('Mine', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),),
-      //     ),
-      //   ),
-      // ),
     return Container(
       width: MediaQuery.of(context).size.width,
       height: window.physicalSize.height / window.devicePixelRatio,
-      padding: const EdgeInsets.fromLTRB(0, kToolbarHeight, 0, 0),
+      padding: const EdgeInsets.fromLTRB(0, kToolbarHeight + 12, 0, 0),
       decoration: BoxDecoration(color: Color(0xff0F0F12)),
       child: Column(
         children: <Widget>[
@@ -213,13 +195,26 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
           Container(
             width: MediaQuery.of(context).size.width,
             height: window.physicalSize.height / window.devicePixelRatio - 315,
-            padding: EdgeInsets.only(top: 28),
+            padding: EdgeInsets.only(top: 18),
             child: Stack(
               alignment: Alignment.topCenter , //指定未定位或部分定位widget的对齐方式
               children: <Widget>[
-                InkWell(
-                  onTap: _incrementCounter,
-                  child: Image.asset('assets/icons/icon_mine_button.png'),
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Image.asset('assets/icons/icon_mine_button.png'),
+                    Listener(
+                      child: Image.asset('assets/icons/icon_simu.png', width: isClick ? 210 : 216, height: isClick ? 210 : 216,),
+                      onPointerDown: (event) {
+                        _incrementCounter();
+                      },
+                      onPointerUp: (event) {
+                        setState(() {
+                          isClick = false;
+                        });
+                      },
+                    )
+                  ],
                 ),
                 Text('Pool Mining', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),),
                 Positioned(
@@ -256,7 +251,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                   child: Container(
                     width: MediaQuery.of(context).size.width,
                     height: 96,
-                    padding: EdgeInsets.fromLTRB(12, 16, 12, 16),
+                    padding: EdgeInsets.all(16),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color.fromRGBO(112, 21, 239, 1),
