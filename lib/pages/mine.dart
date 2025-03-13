@@ -11,8 +11,10 @@ class MinePage extends StatefulWidget {
 
 class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin {
   int _counter = 0;
-  int _level = 1;
-  bool isClick = false;
+  int _level = 1; // 等级
+  int _exp = 0; // 经验值
+  bool isClick = false; // 用于按钮按下缩放效果
+  bool levelVisible = false; // 等级tips是否显示
 
   /// 点击挖矿增加金币
   void _incrementCounter() {
@@ -20,6 +22,27 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
       isClick = true;
       _counter += 5 * _level;
     });
+  }
+
+  late OverlayEntry _overlayEntry;
+  @override
+  void initState() {
+    super.initState();
+    // 初始化等级弹层
+    _overlayEntry = OverlayEntry(builder: (context) => Positioned(
+      top: 106,
+      right: 16,
+      child: Image.asset('assets/images/mine/level_block.png', width: 250,)
+    ));
+  }
+  ///显示Level Tips的方法
+  showLevelTips() {
+    if (levelVisible) {
+      _overlayEntry.remove();
+    } else {
+      Overlay.of(context).insert(_overlayEntry);
+    }
+    levelVisible = !levelVisible;
   }
   
   @override
@@ -32,41 +55,56 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
       child: Column(
         children: <Widget>[
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
             child: Row(
               children: <Widget>[
-                Container(
-                  height: 48,
-                  width: 48,
-                  clipBehavior: Clip.hardEdge,
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(50)),
-                  child: Image.asset('assets/images/avator/lion.jpeg', fit: BoxFit.cover),
-                ),
-                Container(
-                  width: 120,
-                  margin: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text('Liam xaffizme', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, 'profile');
+                  },
+                  child: Row(
+                    children: [
                       Container(
-                        margin: const EdgeInsets.fromLTRB(0, 6, 0, 0),
-                        padding: const EdgeInsets.fromLTRB(8, 2, 8, 2),
+                        width: 50,
+                        height: 50,
+                        clipBehavior: Clip.hardEdge,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4),
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [Color.fromRGBO(112, 21, 239, 0.4), Color.fromRGBO(92, 81, 255, 0.4)]
-                          )
+                          border: Border.all(color: Colors.grey, width: 1),
+                          borderRadius: BorderRadius.circular(50)
                         ),
-                        child: Text('Lvl $_level', style: TextStyle(color: Colors.white, fontSize: 12)),
+                        child: ClipOval(
+                          child: Image.asset('assets/images/avator/lion.jpeg', fit: BoxFit.cover),
+                        )
+                      ),
+                      Container(
+                        width: 120,
+                        margin: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text('Liam xaffizme', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                            Container(
+                              margin: const EdgeInsets.fromLTRB(0, 6, 0, 0),
+                              padding: const EdgeInsets.fromLTRB(8, 2, 8, 2),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4),
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [Color.fromRGBO(112, 21, 239, 0.4), Color.fromRGBO(92, 81, 255, 0.4)]
+                                )
+                              ),
+                              child: Text('Lvl $_level', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 12)),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
+                Spacer(),
                 Container(
-                  width: MediaQuery.of(context).size.width - 120 - 48 - 60,
+                  width: 190,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
@@ -75,22 +113,52 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           Image.asset('assets/icons/icon_xp.png', width: 20, height: 20),
-                          Text('0', style: TextStyle(color: Colors.white, fontSize: 14),),
+                          Text('$_exp', style: TextStyle(color: Colors.white, fontSize: 14),),
                           Text('/200', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 14),),
-                          Container(
-                            margin: EdgeInsets.only(left: 8),
+                          SizedBox(width: 10,),
+                          InkWell(
+                            onTap: showLevelTips,
                             child: Image.asset('assets/icons/icon_info.png', width: 16, height: 16,),
                           )
                         ],
                       ),
-                      Container(
-                        height: 12,
-                        margin: EdgeInsets.only(top: 8),
-                        decoration: BoxDecoration(
-                          color: Color.fromRGBO(35, 36, 41, 1),
-                          border: Border.all(color: Color.fromRGBO(53, 54, 60, 1), width: 1),
-                          borderRadius: BorderRadius.circular(8)
-                        ),
+                      SizedBox(height: 8),
+                      Stack(
+                        alignment: Alignment.centerLeft,
+                        children: [
+                          Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: 12,
+                            decoration: BoxDecoration(
+                              color: Color.fromRGBO(35, 36, 41, 1),
+                              border: Border.all(color: Color.fromRGBO(53, 54, 60, 1), width: 1),
+                              borderRadius: BorderRadius.circular(8)
+                            ),
+                          ),
+                          Positioned(
+                            child: Container(
+                              width: _exp / 200 * 190 + 8,
+                              height: 8,
+                              margin: EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                color: Color.fromRGBO(112, 21, 239, 1),
+                                borderRadius: BorderRadius.circular(8)
+                              ),
+                            )
+                          ),
+                          Positioned(
+                            left: _exp / 200 * 190,
+                            child: Container(
+                              width: 4,
+                              height: 4,
+                              margin: EdgeInsets.only(left: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(6)
+                              )
+                            )
+                          )
+                        ],
                       )
                     ],
                   ),
@@ -194,7 +262,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
           ),
           Container(
             width: MediaQuery.of(context).size.width,
-            height: window.physicalSize.height / window.devicePixelRatio - 315,
+            height: window.physicalSize.height / window.devicePixelRatio - 317,
             padding: EdgeInsets.only(top: 18),
             child: Stack(
               alignment: Alignment.topCenter , //指定未定位或部分定位widget的对齐方式
@@ -217,6 +285,11 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                   ],
                 ),
                 Text('Pool Mining', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),),
+                Positioned(
+                  top: 2,
+                  right: 16,
+                  child: Image.asset('assets/icons/icon_info.png', width: 24,)
+                ),
                 Positioned(
                   top: 48,
                   child: Container(

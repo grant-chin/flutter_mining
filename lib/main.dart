@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'pages/home.dart';
+import './pages/profile.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +17,11 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Lexend',
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(),
+      routes: {
+        "/":(context) => MyHomePage(),
+        'profile': (context) => ProfileView()
+      },
+      // home: const MyHomePage(),
     );
   }
 }
