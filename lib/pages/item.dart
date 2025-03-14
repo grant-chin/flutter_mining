@@ -72,7 +72,7 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Image.asset('assets/images/item/icon_rocket.png', width: 40),
+                      Image.asset('assets/icons/icon_rocket.png', width: 40),
                       Text('Miner', style: TextStyle(color: Colors.white))
                     ],
                   ),
@@ -89,7 +89,7 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Image.asset('assets/images/item/icon_alarm.png', width: 40),
+                      Image.asset('assets/icons/icon_alarm.png', width: 40),
                       Text('Booster', style: TextStyle(color: Colors.white))
                     ],
                   ),
@@ -106,7 +106,7 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Image.asset('assets/images/item/icon_NFT.png', width: 40),
+                      Image.asset('assets/icons/icon_NFT.png', width: 40),
                       Text('NFTs', style: TextStyle(color: Colors.white))
                     ],
                   ),

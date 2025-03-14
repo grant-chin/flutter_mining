@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'pages/home.dart';
 import './pages/profile.dart';
+import './pages/setting.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +20,8 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         "/":(context) => MyHomePage(),
-        'profile': (context) => ProfileView()
+        'profile': (context) => ProfileView(),
+        'setting': (context) => SettingView(),
       },
       // home: const MyHomePage(),
     );

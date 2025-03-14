@@ -108,19 +108,19 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Image.asset('assets/icons/icon_xp.png', width: 20, height: 20),
-                          Text('$_exp', style: TextStyle(color: Colors.white, fontSize: 14),),
-                          Text('/200', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 14),),
-                          SizedBox(width: 10,),
-                          InkWell(
-                            onTap: showLevelTips,
-                            child: Image.asset('assets/icons/icon_info.png', width: 16, height: 16,),
-                          )
-                        ],
+                      InkWell(
+                        onTap: showLevelTips,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Image.asset('assets/icons/icon_xp.png', width: 20, height: 20),
+                            Text('$_exp', style: TextStyle(color: Colors.white, fontSize: 14),),
+                            Text('/200', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 14),),
+                            SizedBox(width: 10,),
+                            Image.asset('assets/icons/icon_info.png', width: 16, height: 16,),
+                          ],
+                        ),
                       ),
                       SizedBox(height: 8),
                       Stack(
