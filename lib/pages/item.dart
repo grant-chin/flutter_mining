@@ -10,6 +10,18 @@ class ItemPage extends StatefulWidget {
 }
 
 class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin {
+  String miner = '';
+
+  // 选择铸造道具
+  _setMiner(name) {
+    setState(() {
+      if (miner != name) { miner = name; }
+      else { miner = ''; }
+    });
+  }
+  // 开始铸造
+  _goMinting() {}
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -51,7 +63,104 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
                     color: Color.fromRGBO(249, 249, 249, 0.8),
                     fontSize: 16,
                   ))
-                )
+                ),
+                Positioned(
+                  top: 90,
+                  left: 32,
+                  width: MediaQuery.of(context).size.width - 98,
+                  height: MediaQuery.of(context).size.width - 98,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Image.asset('assets/images/item/bot_item.png', width: 102,),
+                              Image.asset('assets/images/item/bot_active.png', width: 102,),
+                              Column(
+                                children: [
+                                  Image.asset('assets/icons/icon_rocket.png', width: 48,),
+                                  SizedBox(height: 4),
+                                  Text('Rocket', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8)),)
+                                ],
+                              )
+                            ],
+                          ),
+                          Stack(
+                            children: [
+                              Image.asset('assets/images/item/bot_item.png', width: 102,)
+                            ],
+                          ),
+                          Stack(
+                            children: [
+                              Image.asset('assets/images/item/bot_item.png', width: 102,)
+                            ],
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Stack(
+                            children: [
+                              Image.asset('assets/images/item/bot_item.png', width: 102,)
+                            ],
+                          ),
+                          Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Image.asset('assets/images/item/turn_value.png', width: 102,),
+                              Positioned(
+                                top: 22,
+                                child: Text('Est. Cost', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 14),),
+                              ),
+                              Positioned(
+                                bottom: 24,
+                                child: Row(
+                                  children: [
+                                    Image.asset('assets/icons/icon_coin.png', width: 30,),
+                                    Container(
+                                      margin: EdgeInsets.only(top: 5, left: 2),
+                                      child: Text('0', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          Stack(
+                            children: [
+                              Image.asset('assets/images/item/bot_item.png', width: 102,)
+                            ],
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Stack(
+                            children: [
+                              Image.asset('assets/images/item/bot_item.png', width: 102,)
+                            ],
+                          ),
+                          Stack(
+                            children: [
+                              Image.asset('assets/images/item/bot_item.png', width: 102,)
+                            ],
+                          ),
+                          Stack(
+                            children: [
+                              Image.asset('assets/images/item/bot_item.png', width: 102,)
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
+                ),
               ],
             ),
           ),
@@ -60,57 +169,78 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
             padding: EdgeInsets.only(left: 16, right: 16),
             child: Row(
               children: [
-                Container(
-                  width: (MediaQuery.of(context).size.width - 96) / 3,
-                  margin: EdgeInsets.only(left: 16),
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Color.fromRGBO(22, 22, 26, 1),
-                    borderRadius: BorderRadius.circular(8)
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Image.asset('assets/icons/icon_rocket.png', width: 40),
-                      Text('Miner', style: TextStyle(color: Colors.white))
-                    ],
-                  ),
-                ),
-                Container(
-                  width: (MediaQuery.of(context).size.width - 96) / 3,
-                  margin: EdgeInsets.only(left: 16),
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Color.fromRGBO(22, 22, 26, 1),
-                    borderRadius: BorderRadius.circular(8)
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Image.asset('assets/icons/icon_alarm.png', width: 40),
-                      Text('Booster', style: TextStyle(color: Colors.white))
-                    ],
+                InkWell(
+                  onTap: () {
+                    _setMiner('Rocket');
+                  },
+                  child: Container(
+                    width: (MediaQuery.of(context).size.width - 96) / 3,
+                    margin: EdgeInsets.only(left: 16),
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: miner == 'Rocket' ? Color.fromRGBO(112, 21, 239, 0.15) : Color.fromRGBO(22, 22, 26, 1),
+                      border: Border.all(color: miner == 'Rocket' ? Color.fromRGBO(112, 21, 239, 1) : Colors.transparent),
+                      borderRadius: BorderRadius.circular(8)
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image.asset('assets/icons/icon_rocket.png', width: 38),
+                        SizedBox(width: 4),
+                        Text('Rocket', style: TextStyle(color: Colors.white, fontSize: 12))
+                      ],
+                    ),
                   ),
                 ),
-                Container(
-                  width: (MediaQuery.of(context).size.width - 96) / 3,
-                  margin: EdgeInsets.only(left: 16),
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Color.fromRGBO(22, 22, 26, 1),
-                    borderRadius: BorderRadius.circular(8)
+                InkWell(
+                  onTap: () {
+                    _setMiner('Booster');
+                  },
+                  child: Container(
+                    width: (MediaQuery.of(context).size.width - 96) / 3,
+                    margin: EdgeInsets.only(left: 16),
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: miner == 'Booster' ? Color.fromRGBO(112, 21, 239, 0.15) : Color.fromRGBO(22, 22, 26, 1),
+                      border: Border.all(color: miner == 'Booster' ? Color.fromRGBO(112, 21, 239, 1) : Colors.transparent),
+                      borderRadius: BorderRadius.circular(8)
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image.asset('assets/icons/icon_alarm.png', width: 38),
+                        SizedBox(width: 4),
+                        Text('Booster', style: TextStyle(color: Colors.white, fontSize: 12))
+                      ],
+                    ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Image.asset('assets/icons/icon_NFT.png', width: 40),
-                      Text('NFTs', style: TextStyle(color: Colors.white))
-                    ],
+                ),
+                InkWell(
+                  onTap: () {
+                    _setMiner('NFTs');
+                  },
+                  child: Container(
+                    width: (MediaQuery.of(context).size.width - 96) / 3,
+                    margin: EdgeInsets.only(left: 16),
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: miner == 'NFTs' ? Color.fromRGBO(112, 21, 239, 0.15) : Color.fromRGBO(22, 22, 26, 1),
+                      border: Border.all(color: miner == 'NFTs' ? Color.fromRGBO(112, 21, 239, 1) : Colors.transparent),
+                      borderRadius: BorderRadius.circular(8)
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image.asset('assets/icons/icon_NFT.png', width: 38),
+                        SizedBox(width: 4),
+                        Text('NFTs', style: TextStyle(color: Colors.white, fontSize: 12))
+                      ],
+                    ),
                   ),
-                )
+                ),
               ],
             ),
           ),
@@ -121,12 +251,13 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
             padding: EdgeInsets.all(16),
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromRGBO(112, 21, 239, 1),
                 overlayColor: Colors.white,
+                backgroundColor: Color.fromRGBO(112, 21, 239, 1),
+                disabledBackgroundColor: Color.fromRGBO(35, 36, 41, 1),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               ),
-              child: Text('Mint', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
-              onPressed: () {}
+              onPressed: miner != '' ? _goMinting : null,
+              child: Text('Mint', style: TextStyle(color: miner != '' ? Colors.white : Color.fromRGBO(249, 249, 249, 0.2), fontSize: 20, fontWeight: FontWeight.bold)),
             ),
           )
         ],

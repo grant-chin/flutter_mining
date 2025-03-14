@@ -12,7 +12,7 @@ class ProfileView extends StatelessWidget {
           SliverAppBar(
             pinned: true, // 滑动到顶端时会固定住
             backgroundColor: Colors.black,
-            expandedHeight: 100,
+            // expandedHeight: 80,
             iconTheme: IconThemeData(color: Colors.white),
             title: Text('Profile', style: TextStyle(
               color: Colors.white,
@@ -229,6 +229,31 @@ class ProfileView extends StatelessWidget {
                     padding: EdgeInsets.all(16),
                     child: Text('NFTs', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),),
                   ),
+                  // Container(
+                  //   child: Column(
+                  //     children: [
+                  //       SizedBox(height: 120),
+                  //       Text("You don't have any NFTs yet. Tap to mint.", style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8)),),
+                  //       SizedBox(height: 30),
+                  //       Container(
+                  //         width: 260,
+                  //         height: 54,
+                  //         child: ElevatedButton(
+                  //           style: ElevatedButton.styleFrom(
+                  //             overlayColor: Colors.white,
+                  //             backgroundColor: Color.fromRGBO(112, 21, 239, 1),
+                  //             disabledBackgroundColor: Color.fromRGBO(35, 36, 41, 1),
+                  //             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  //           ),
+                  //           onPressed: () {
+                  //             Navigator.of(context).pop();
+                  //           },
+                  //           child: Text('Mint', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                  //         ),
+                  //       )
+                  //     ],
+                  //   ),
+                  // )
                 ],
               ),
             ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'pages/home.dart';
-import './pages/profile.dart';
-import './pages/setting.dart';
+import 'pages/profile.dart';
+import 'pages/setting.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,10 +19,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       routes: {
-        "/":(context) => MyHomePage(),
+        "/": (context) => MyHomePage(),
         'profile': (context) => ProfileView(),
         'setting': (context) => SettingView(),
       },
+      initialRoute: '/',
       // home: const MyHomePage(),
     );
   }
