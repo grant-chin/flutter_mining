@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'package:shake_animation_widget/shake_animation_widget.dart';
 
 
 class MinePage extends StatefulWidget {
@@ -15,14 +17,8 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
   int _exp = 0; // 经验值
   bool isClick = false; // 用于按钮按下缩放效果
   bool levelVisible = false; // 等级tips是否显示
-
-  /// 点击挖矿增加金币
-  void _incrementCounter() {
-    setState(() {
-      isClick = true;
-      _counter += 5 * _level;
-    });
-  }
+  int _stroke_index = -1; // 当前显示圆环进度条下标
+  bool _mining = false; // 是否正在mining状态
 
   late OverlayEntry _overlayEntry;
   @override
@@ -270,50 +266,134 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                 Stack(
                   alignment: Alignment.center,
                   children: [
-                    Image.asset('assets/icons/icon_mine_button.png'),
-                    Positioned(top: 137, child: Image.asset('assets/images/mine/stroke_1.png', width: 15.2375)),
-                    Positioned(top: 138, left: MediaQuery.of(context).size.width / 2 + 20, child: Image.asset('assets/images/mine/stroke_2.png', width: 16.9625)),
-                    Positioned(top: 145, left: MediaQuery.of(context).size.width / 2 + 45, child: Image.asset('assets/images/mine/stroke_3.png', width: 18.722)),
-                    Positioned(top: 158, left: MediaQuery.of(context).size.width / 2 + 70, child: Image.asset('assets/images/mine/stroke_4.png', width: 19.757)),
-                    Positioned(top: 174, left: MediaQuery.of(context).size.width / 2 + 90, child: Image.asset('assets/images/mine/stroke_5.png', width: 20.0445)),
-                    Positioned(top: 196, left: MediaQuery.of(context).size.width / 2 + 106, child: Image.asset('assets/images/mine/stroke_6.png', width: 19.55)),
-                    Positioned(top: 222, left: MediaQuery.of(context).size.width / 2 + 121, child: Image.asset('assets/images/mine/stroke_7.png', width: 18.308)),
-                    Positioned(top: 248, left: MediaQuery.of(context).size.width / 2 + 130, child: Image.asset('assets/images/mine/stroke_8.png', width: 16.353)),
-                    Positioned(top: 274, left: MediaQuery.of(context).size.width / 2 + 130, child: Image.asset('assets/images/mine/stroke_9.png', width: 13.9725)),
-                    Positioned(top: 304, left: MediaQuery.of(context).size.width / 2 + 129, child: Image.asset('assets/images/mine/stroke_10.png', width: 16.353)),
-                    Positioned(top: 331, left: MediaQuery.of(context).size.width / 2 + 123, child: Image.asset('assets/images/mine/stroke_11.png', width: 18.308)),
-                    Positioned(top: 356, left: MediaQuery.of(context).size.width / 2 + 109, child: Image.asset('assets/images/mine/stroke_12.png', width: 19.55)),
-                    Positioned(top: 378, left: MediaQuery.of(context).size.width / 2 + 92, child: Image.asset('assets/images/mine/stroke_13.png', width: 20.0445)),
-                    Positioned(top: 394, left: MediaQuery.of(context).size.width / 2 + 70, child: Image.asset('assets/images/mine/stroke_14.png', width: 19.757)),
-                    Positioned(top: 408, left: MediaQuery.of(context).size.width / 2 + 46, child: Image.asset('assets/images/mine/stroke_15.png', width: 18.722)),
-                    Positioned(top: 416, left: MediaQuery.of(context).size.width / 2 + 20, child: Image.asset('assets/images/mine/stroke_16.png', width: 16.9625)),
-                    Positioned(top: 420, child: Image.asset('assets/images/mine/stroke_17.png', width: 15.2375)),
-                    Positioned(top: 416, right: MediaQuery.of(context).size.width / 2 + 20, child: Image.asset('assets/images/mine/stroke_18.png', width: 16.9625)),
-                    Positioned(top: 408, right: MediaQuery.of(context).size.width / 2 + 46, child: Image.asset('assets/images/mine/stroke_19.png', width: 18.722)),
-                    Positioned(top: 394, right: MediaQuery.of(context).size.width / 2 + 70, child: Image.asset('assets/images/mine/stroke_20.png', width: 19.757)),
-                    Positioned(top: 378, right: MediaQuery.of(context).size.width / 2 + 92, child: Image.asset('assets/images/mine/stroke_21.png', width: 20.0445)),
-                    Positioned(top: 356, right: MediaQuery.of(context).size.width / 2 + 109, child: Image.asset('assets/images/mine/stroke_22.png', width: 19.55)),
-                    Positioned(top: 331, right: MediaQuery.of(context).size.width / 2 + 123, child: Image.asset('assets/images/mine/stroke_23.png', width: 18.308)),
-                    Positioned(top: 304, right: MediaQuery.of(context).size.width / 2 + 129, child: Image.asset('assets/images/mine/stroke_24.png', width: 16.353)),
-                    Positioned(top: 274, right: MediaQuery.of(context).size.width / 2 + 130, child: Image.asset('assets/images/mine/stroke_25.png', width: 13.9725)),
-                    Positioned(top: 248, right: MediaQuery.of(context).size.width / 2 + 130, child: Image.asset('assets/images/mine/stroke_26.png', width: 16.353)),
-                    Positioned(top: 218, right: MediaQuery.of(context).size.width / 2 + 120, child: Image.asset('assets/images/mine/stroke_27.png', width: 18.308)),
-                    Positioned(top: 198, right: MediaQuery.of(context).size.width / 2 + 110, child: Image.asset('assets/images/mine/stroke_28.png', width: 19.55)),
-                    Positioned(top: 178, right: MediaQuery.of(context).size.width / 2 + 92, child: Image.asset('assets/images/mine/stroke_29.png', width: 20.0445)),
-                    Positioned(top: 160, right: MediaQuery.of(context).size.width / 2 + 70, child: Image.asset('assets/images/mine/stroke_30.png', width: 19.757)),
-                    Positioned(top: 148, right: MediaQuery.of(context).size.width / 2 + 46, child: Image.asset('assets/images/mine/stroke_31.png', width: 18.722)),
-                    Positioned(top: 138, right: MediaQuery.of(context).size.width / 2 + 20, child: Image.asset('assets/images/mine/stroke_32.png', width: 16.9625)),
-                    Listener(
-                      child: Image.asset('assets/icons/icon_simu.png', width: isClick ? 210 : 216, height: isClick ? 210 : 216,),
-                      onPointerDown: (event) {
-                        _incrementCounter();
-                      },
-                      onPointerUp: (event) {
-                        setState(() {
-                          isClick = false;
-                        });
-                      },
-                    )
+                    Image.asset('assets/images/mine/mine_bg.png'),
+                    Image.asset('assets/images/mine/mine_ring_bg.png', scale: 2.76,),
+                    Positioned(top: 136, child: Opacity(opacity: _stroke_index > 0 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_1.png', scale: 2.8),)),
+                    Positioned(top: 137, left: MediaQuery.of(context).size.width / 2 + 20, child: Opacity(
+                      opacity: _stroke_index > 1 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_2.png', scale: 2.8))
+                    ),
+                    Positioned(top: 144, left: MediaQuery.of(context).size.width / 2 + 46, child: Opacity(
+                      opacity: _stroke_index > 2 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_3.png', scale: 2.8))
+                    ),
+                    Positioned(top: 157, left: MediaQuery.of(context).size.width / 2 + 70, child: Opacity(
+                      opacity: _stroke_index > 3 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_4.png', scale: 2.8))
+                    ),
+                    Positioned(top: 174, left: MediaQuery.of(context).size.width / 2 + 92, child: Opacity(
+                      opacity: _stroke_index > 4 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_5.png', scale: 2.8))
+                    ),
+                    Positioned(top: 196, left: MediaQuery.of(context).size.width / 2 + 109, child: Opacity(
+                      opacity: _stroke_index > 5 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_6.png', scale: 2.8))
+                    ),
+                    Positioned(top: 222, left: MediaQuery.of(context).size.width / 2 + 124, child: Opacity(
+                      opacity: _stroke_index > 6 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_7.png', scale: 2.8))
+                    ),
+                    Positioned(top: 250, left: MediaQuery.of(context).size.width / 2 + 133, child: Opacity(
+                      opacity: _stroke_index > 7 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_8.png', scale: 2.8))
+                    ),
+                    Positioned(top: 278, left: MediaQuery.of(context).size.width / 2 + 136, child: Opacity(
+                      opacity: _stroke_index > 8 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_9.png', scale: 2.8))
+                    ),
+                    Positioned(top: 306, left: MediaQuery.of(context).size.width / 2 + 132, child: Opacity(
+                      opacity: _stroke_index > 9 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_10.png', scale: 2.8))
+                    ),
+                    Positioned(top: 332, left: MediaQuery.of(context).size.width / 2 + 124, child: Opacity(
+                      opacity: _stroke_index > 10 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_11.png', scale: 2.8))
+                    ),
+                    Positioned(top: 356, left: MediaQuery.of(context).size.width / 2 + 110, child: Opacity(
+                      opacity: _stroke_index > 11 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_12.png', scale: 2.8))
+                    ),
+                    Positioned(top: 377, left: MediaQuery.of(context).size.width / 2 + 91, child: Opacity(
+                      opacity: _stroke_index > 12 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_13.png', scale: 2.8))
+                    ),
+                    Positioned(top: 395, left: MediaQuery.of(context).size.width / 2 + 70, child: Opacity(
+                      opacity: _stroke_index > 13 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_14.png', scale: 2.8))
+                    ),
+                    Positioned(top: 410, left: MediaQuery.of(context).size.width / 2 + 46, child: Opacity(
+                      opacity: _stroke_index > 14 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_15.png', scale: 2.8))
+                    ),
+                    Positioned(top: 418, left: MediaQuery.of(context).size.width / 2 + 20, child: Opacity(
+                      opacity: _stroke_index > 15 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_16.png', scale: 2.8))
+                    ),
+                    Positioned(top: 422, child: Opacity(
+                      opacity: _stroke_index > 16 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_17.png', scale: 2.8))
+                    ),
+                    Positioned(top: 418, right: MediaQuery.of(context).size.width / 2 + 20, child: Opacity(
+                      opacity: _stroke_index > 17 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_18.png', scale: 2.8))
+                    ),
+                    Positioned(top: 410, right: MediaQuery.of(context).size.width / 2 + 46, child: Opacity(
+                      opacity: _stroke_index > 18 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_19.png', scale: 2.8))
+                    ),
+                    Positioned(top: 395, right: MediaQuery.of(context).size.width / 2 + 70, child: Opacity(
+                      opacity: _stroke_index > 19 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_20.png', scale: 2.8))
+                    ),
+                    Positioned(top: 377, right: MediaQuery.of(context).size.width / 2 + 91, child: Opacity(
+                      opacity: _stroke_index > 20 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_21.png', scale: 2.8))
+                    ),
+                    Positioned(top: 356, right: MediaQuery.of(context).size.width / 2 + 110, child: Opacity(
+                      opacity: _stroke_index > 21 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_22.png', scale: 2.8))
+                    ),
+                    Positioned(top: 332, right: MediaQuery.of(context).size.width / 2 + 124, child: Opacity(
+                      opacity: _stroke_index > 22 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_23.png', scale: 2.8))
+                    ),
+                    Positioned(top: 306, right: MediaQuery.of(context).size.width / 2 + 132, child: Opacity(
+                      opacity: _stroke_index > 23 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_24.png', scale: 2.8))
+                    ),
+                    Positioned(top: 278, right: MediaQuery.of(context).size.width / 2 + 136, child: Opacity(
+                      opacity: _stroke_index > 24 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_25.png', scale: 2.8))
+                    ),
+                    Positioned(top: 250, right: MediaQuery.of(context).size.width / 2 + 133, child: Opacity(
+                      opacity: _stroke_index > 25 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_26.png', scale: 2.8))
+                    ),
+                    Positioned(top: 222, right: MediaQuery.of(context).size.width / 2 + 124, child: Opacity(
+                      opacity: _stroke_index > 26 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_27.png', scale: 2.8))
+                    ),
+                    Positioned(top: 196, right: MediaQuery.of(context).size.width / 2 + 109, child: Opacity(
+                      opacity: _stroke_index > 27 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_28.png', scale: 2.8))
+                    ),
+                    Positioned(top: 174, right: MediaQuery.of(context).size.width / 2 + 92, child: Opacity(
+                      opacity: _stroke_index > 28 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_29.png', scale: 2.8))
+                    ),
+                    Positioned(top: 157, right: MediaQuery.of(context).size.width / 2 + 70, child: Opacity(
+                      opacity: _stroke_index > 29 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_30.png', scale: 2.8))
+                    ),
+                    Positioned(top: 144, right: MediaQuery.of(context).size.width / 2 + 46, child: Opacity(
+                      opacity: _stroke_index > 30 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_31.png', scale: 2.8))
+                    ),
+                    Positioned(top: 137, right: MediaQuery.of(context).size.width / 2 + 20, child: Opacity(
+                      opacity: _stroke_index > 31 ? 1 : 0,
+                      child: Image.asset('assets/images/mine/stroke_32.png', scale: 2.8))
+                    ),
+                    buildShakeAnimationWidget()
                   ],
                 ),
                 Text('Pool Mining', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),),
@@ -351,21 +431,166 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                     ),
                   )
                 ),
-                Positioned(
-                  bottom: 0,
+                _mining ? Positioned(
+                  bottom: 106,
                   child: Container(
                     width: MediaQuery.of(context).size.width,
-                    height: 96,
-                    padding: EdgeInsets.all(16),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromRGBO(112, 21, 239, 1),
-                        overlayColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    child: Row(
+                      children: [
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: Container(
+                            height: 54,
+                            decoration: BoxDecoration(
+                              color: Color.fromRGBO(112, 21, 239, 0.15),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Image.asset('assets/icons/icon_rocket.png', width: 20, height: 20),
+                                SizedBox(width: 6),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text('10', style: TextStyle(color: Colors.white, fontSize: 16, height: 1.25)),
+                                    Text(' Gh/s', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 11)),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: Container(
+                            height: 54,
+                            decoration: BoxDecoration(
+                              color: Color.fromRGBO(112, 21, 239, 0.15),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Image.asset('assets/icons/icon_crown.png', width: 20, height: 20),
+                                SizedBox(width: 6),
+                                Text('20%', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 16, height: 1.25)),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: Container(
+                            height: 54,
+                            padding: EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Color.fromRGBO(112, 21, 239, 0.15),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Image.asset('assets/icons/icon_clock.png', width: 20, height: 20),
+                                SizedBox(width: 6),
+                                Text('8:00:00', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 16, height: 1.25)),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 16),
+                      ],
+                    )
+                  )
+                ): Container(),
+                Positioned(
+                  bottom: 0,
+                  child: Row(
+                    children: [
+                      SizedBox(width: 16),
+                      Stack(
+                        alignment: Alignment.center,
+                        clipBehavior: Clip.none,
+                        children: [
+                          Container(
+                            width: 64,
+                            height: 64,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Color.fromRGBO(92, 81, 255, 1)),
+                              borderRadius: BorderRadius.circular(16)
+                            ),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.all(0),
+                                backgroundColor: Color.fromRGBO(92, 81, 255, 0.3),
+                                overlayColor: Color.fromRGBO(92, 81, 255, 1),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                              ),
+                              onPressed: () {},
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset('assets/icons/icon_alarm.png', width: 24),
+                                  Text('2h', style: TextStyle(color: Colors.white, fontSize: 14))
+                                ]
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: -4,
+                            right: -6,
+                            child: Container(
+                              padding: EdgeInsets.fromLTRB(8, 2, 8, 2),
+                              decoration: BoxDecoration(
+                                color: Color.fromRGBO(91, 50, 45, 1),
+                                borderRadius: BorderRadius.circular(8)
+                              ),
+                              child: Text('x2', style: TextStyle(color: Color.fromRGBO(252, 114, 90, 1), fontSize: 10, height: 1),),
+                            )
+                          )
+                        ],
                       ),
-                      child: Text('Mine', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
-                      onPressed: () {}
-                    ),
+                      Container(
+                        width: MediaQuery.of(context).size.width - 80,
+                        height: 96,
+                        padding: EdgeInsets.all(16),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color.fromRGBO(112, 21, 239, _mining ? 0.3 : 1),
+                            overlayColor: _mining ?Color.fromRGBO(112, 21, 239, 1) : Colors.black,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                          ),
+                          child: Text(_mining ? 'Mining  23.2 Coins' : 'Mine', style: TextStyle(
+                            color: _mining ? Color.fromRGBO(112, 21, 239, 1) : Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold
+                          )),
+                          onPressed: () {
+                            setState(() {
+                              if (!_mining) {
+                                _mining = true;
+                                Timer.periodic(const Duration(milliseconds: 40), (timer) {
+                                  if (!_mining) timer.cancel();
+                                  setState(() {
+                                    if (_stroke_index < 33) {
+                                      _stroke_index++;
+                                    } else {
+                                      _stroke_index = 1;
+                                    }
+                                  });
+                                });
+                              } else {
+                                _mining = false;
+                                _stroke_index = -1;
+                              }
+                            });
+                          }
+                        ),
+                      )
+                    ],
                   )
                 )
               ],
@@ -373,6 +598,52 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
           ),
         ],
       ),
+    );
+  }
+
+
+  
+    ///抖动动画控制器
+  final ShakeAnimationController _shakeAnimationController = ShakeAnimationController();
+  ///构建抖动效果
+  ShakeAnimationWidget buildShakeAnimationWidget() {
+    return ShakeAnimationWidget(
+      //抖动控制器
+      shakeAnimationController: _shakeAnimationController,
+      //微旋转的抖动
+      shakeAnimationType: ShakeAnimationType.SkewShake,
+      //设置不开启抖动
+      isForward: false,
+      //默认为 0 无限执行
+      shakeCount: 1,
+      //抖动的幅度 取值范围为[0,1]
+      shakeRange: 0.2,
+      //执行抖动动画的子Widget
+      child: Listener(
+        child: Image.asset('assets/icons/icon_simu.png', width: isClick ? 210 : 216),
+        onPointerDown: (event) {
+          setState(() {
+            isClick = true;
+          });
+        },
+        onPointerUp: (event) {
+          setState(() {
+            isClick = false;
+            // //判断抖动动画是否正在执行
+            // if (_shakeAnimationController.animationRunging) {
+            //   //停止抖动动画
+            //   _shakeAnimationController.stop();
+            // } else {
+            //   //开启抖动动画
+            //   //参数shakeCount 用来配置抖动次数
+            //   //通过 controller start 方法默认为 1
+            //   _shakeAnimationController.start(shakeCount: 1);
+            // }
+            _shakeAnimationController.start();
+            _counter += 5 * _level;
+          });
+        },
+      )
     );
   }
 }
