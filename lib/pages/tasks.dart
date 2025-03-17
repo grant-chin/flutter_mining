@@ -19,7 +19,6 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
           delegate: SliverChildBuilderDelegate(
             (context, index) => Container(
               width: MediaQuery.of(context).size.width,
-              height: window.physicalSize.height / window.devicePixelRatio,
               padding: const EdgeInsets.fromLTRB(0, kToolbarHeight, 0, 0),
               decoration: BoxDecoration(color: Color(0xff0F0F12)),
               child: Column(

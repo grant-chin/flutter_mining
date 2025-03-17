@@ -45,10 +45,95 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
             case 'Booster': _mint_end_index = 5; break;
             case 'NFTs': _mint_end_index = [1, 2, 3, 4, 6, 7][Random().nextInt(6)]; break;
           }
-          if (_mint_round > 5 && _mint_index == _mint_end_index) {
+          if (_mint_round > 3 && _mint_index == _mint_end_index) {
             is_minting = false;
             _mint_round = 0;
             timer.cancel();
+
+            showDialog(// 传入 context
+              context: context,
+              useSafeArea: false,
+              // 构建 Dialog 的视图
+              builder: (_) => Stack(
+                alignment: Alignment.center,
+                children: [
+                  Positioned.fill(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(
+                        sigmaX: 2,
+                        sigmaY: 2,
+                      ),
+                      child: Container(
+                        color: Colors.black12,
+                      ),
+                    ),
+                  ),
+                  Positioned(top: 180, child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Image.asset('assets/images/item/dialog_miner.png', width: MediaQuery.of(context).size.width,),
+                      Positioned(bottom: 30, child: Container(
+                        width: MediaQuery.of(context).size.width - 160,
+                        height: MediaQuery.of(context).size.width - 150,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('You’ve Unlocked a Mystery Item!', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8)),),
+                            Container(
+                              width: 160,
+                              height: 144,
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              decoration: BoxDecoration(
+                                color: Color.fromRGBO(35, 36, 41, 1),
+                                borderRadius: BorderRadius.circular(16)
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  Image.asset('assets/icons/icon_rocket.png', width: 50),
+                                  Text('Miner', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),),
+                                  Text('20 Gh/s', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),)
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              height: 58,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  overlayColor: Colors.white,
+                                  foregroundColor: Colors.white,
+                                  backgroundColor: Color.fromRGBO(112, 21, 239, 1),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Text('Claim it', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                              ),
+                            )
+                          ],
+                        ),
+                      ))
+                    ],
+                  )),
+                  Positioned(
+                    top: MediaQuery.of(context).size.width + 210,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        overlayColor: Colors.transparent,
+                        backgroundColor: Colors.transparent,
+                        padding: EdgeInsets.all(0),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Image.asset('assets/icons/icon_close.png', width: 40)
+                    )
+                  )
+                ],
+              )
+            );
           }
         });
       });
@@ -59,7 +144,6 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      height: window.physicalSize.height / window.devicePixelRatio,
       padding: const EdgeInsets.fromLTRB(0, kToolbarHeight, 0, 0),
       decoration: BoxDecoration(
         color: Color(0xff0F0F12),

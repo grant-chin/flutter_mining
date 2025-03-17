@@ -16,36 +16,85 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
   int _level = 1; // 等级
   int _exp = 0; // 经验值
   bool isClick = false; // 用于按钮按下缩放效果
-  bool levelVisible = false; // 等级tips是否显示
   int _stroke_index = -1; // 当前显示圆环进度条下标
   bool _mining = false; // 是否正在mining状态
 
-  late OverlayEntry _overlayEntry;
-  @override
-  void initState() {
-    super.initState();
-    // 初始化等级弹层
-    _overlayEntry = OverlayEntry(builder: (context) => Positioned(
-      top: 106,
-      right: 16,
-      child: Image.asset('assets/images/mine/level_block.png', width: 250,)
-    ));
+  // 显示Level Tips的方法
+  _showLevelTips() {
+    showDialog(
+      context: context,
+      useSafeArea: false,
+      barrierColor: Colors.transparent,
+      builder: (_) => Stack(
+        children: [
+          Positioned(
+            top: 110,
+            right: 12,
+            child: Image.asset('assets/images/mine/level_block.png', width: 226)
+          )
+        ],
+      )
+    );
   }
-  ///显示Level Tips的方法
-  showLevelTips() {
-    if (levelVisible) {
-      _overlayEntry.remove();
-    } else {
-      Overlay.of(context).insert(_overlayEntry);
-    }
-    levelVisible = !levelVisible;
+  // 显示rule弹窗
+  _showRuleDialog() {
+    showDialog(
+      context: context,
+      useSafeArea: false,
+      builder: (_) => Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: 560,
+            padding: EdgeInsets.only(bottom: kBottomNavigationBarHeight),
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(24)
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color.fromRGBO(112, 21, 239, 0.3), Color.fromRGBO(92, 81, 255, 0)]
+                ),
+              ),
+              child: Column(
+                children: [
+                  Image.asset('assets/images/mine/rule_text.png'),
+                  Spacer(),
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 58,
+                    padding:EdgeInsets.symmetric(horizontal: 16) ,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        overlayColor: Colors.white,
+                        foregroundColor: Colors.white,
+                        backgroundColor: Color.fromRGBO(112, 21, 239, 1),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('Got it', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          )
+        ],
+      )
+    );
   }
   
   @override
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      height: window.physicalSize.height / window.devicePixelRatio,
       padding: const EdgeInsets.fromLTRB(0, kToolbarHeight + 12, 0, 0),
       decoration: BoxDecoration(color: Color(0xff0F0F12)),
       child: Column(
@@ -104,19 +153,19 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      InkWell(
-                        onTap: showLevelTips,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Image.asset('assets/icons/icon_xp.png', width: 20, height: 20),
-                            Text('$_exp', style: TextStyle(color: Colors.white, fontSize: 14),),
-                            Text('/200', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 14),),
-                            SizedBox(width: 10,),
-                            Image.asset('assets/icons/icon_info.png', width: 16, height: 16,),
-                          ],
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Image.asset('assets/icons/icon_xp.png', width: 20, height: 20),
+                          Text('$_exp', style: TextStyle(color: Colors.white, fontSize: 14),),
+                          Text('/200', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 14),),
+                          SizedBox(width: 10,),
+                          InkWell(
+                            onTap: _showLevelTips,
+                            child: Image.asset('assets/icons/icon_info.png', width: 16, height: 16,),
+                          )
+                        ],
                       ),
                       SizedBox(height: 8),
                       Stack(
@@ -258,7 +307,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
           ),
           Container(
             width: MediaQuery.of(context).size.width,
-            height: window.physicalSize.height / window.devicePixelRatio - 317,
+            height: MediaQuery.of(context).size.height - 317,
             padding: EdgeInsets.only(top: 18),
             child: Stack(
               alignment: Alignment.topCenter , //指定未定位或部分定位widget的对齐方式
@@ -400,7 +449,10 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                 Positioned(
                   top: 2,
                   right: 16,
-                  child: Image.asset('assets/icons/icon_info.png', width: 24,)
+                  child: InkWell(
+                    onTap: _showRuleDialog,
+                    child: Image.asset('assets/icons/icon_info.png', width: 24),
+                  )
                 ),
                 Positioned(
                   top: 48,
