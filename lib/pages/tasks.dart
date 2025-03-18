@@ -10,13 +10,13 @@ class TasksPage extends StatefulWidget {
 
 class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMixin {
   int weekday = DateTime.now().weekday;
-  List ClaimedArr = [];
-  bool is_claimed = false; // 今日是否已签到
+  List claimedArr = [];
+  bool isClaimed = false; // 今日是否已签到
 
   _onTodayClaim() {
     setState(() {
-      is_claimed = !is_claimed;
-      ClaimedArr = [...ClaimedArr, weekday];
+      isClaimed = !isClaimed;
+      claimedArr = [...claimedArr, weekday];
     });
   }
 
@@ -39,7 +39,7 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
         SliverToBoxAdapter(
           child:  Container(
             width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(color: Colors.black),
+            // decoration: BoxDecoration(color: Colors.black),
             child: Column(
               children: [
                 Stack(
@@ -48,32 +48,32 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                     Image.asset('assets/images/tasks/turn_table.png', width: 344),
                     // day 1
                     // Positioned(top: 13, left: 160, child: Image.asset('assets/images/tasks/day_1_default.png', scale: 2.95)),
-                    weekday == 1 && !ClaimedArr.contains(1) ? Positioned(top: 13, left: 160, child: Image.asset('assets/images/tasks/day_1_primary.png', scale: 2.95)) : Container(),
-                    ClaimedArr.contains(1) ? Positioned(top: 13, left: 160, child: Image.asset('assets/images/tasks/day_1_plain.png', scale: 2.95)) : Container(),
+                    weekday == 1 && !claimedArr.contains(1) ? Positioned(top: 13, left: 160, child: Image.asset('assets/images/tasks/day_1_primary.png', scale: 2.95)) : Container(),
+                    claimedArr.contains(1) ? Positioned(top: 13, left: 160, child: Image.asset('assets/images/tasks/day_1_plain.png', scale: 2.95)) : Container(),
                     // day 2
                     weekday < 2 ? Positioned(top: 34, left: 262, child: Image.asset('assets/images/tasks/day_2_default.png', scale: 2.95)) : Container(),
-                    weekday == 2 && !ClaimedArr.contains(2) ? Positioned(top: 34, left: 262, child: Image.asset('assets/images/tasks/day_2_primary.png', scale: 2.95)) : Container(),
-                    ClaimedArr.contains(2) ? Positioned(top: 34, left: 262, child: Image.asset('assets/images/tasks/day_2_plain.png', scale: 2.95)) : Container(),
+                    weekday == 2 && !claimedArr.contains(2) ? Positioned(top: 34, left: 262, child: Image.asset('assets/images/tasks/day_2_primary.png', scale: 2.95)) : Container(),
+                    claimedArr.contains(2) ? Positioned(top: 34, left: 262, child: Image.asset('assets/images/tasks/day_2_plain.png', scale: 2.95)) : Container(),
                     // day 3
                     weekday < 3 ? Positioned(top: 144, left: 288, child: Image.asset('assets/images/tasks/day_3_default.png', scale: 2.95)) : Container(),
-                    weekday == 3 && !ClaimedArr.contains(3) ? Positioned(top: 144, left: 288, child: Image.asset('assets/images/tasks/day_3_primary.png', scale: 2.95)) : Container(),
-                    ClaimedArr.contains(3) ? Positioned(top: 144, left: 288, child: Image.asset('assets/images/tasks/day_3_plain.png', scale: 2.95)) : Container(),
+                    weekday == 3 && !claimedArr.contains(3) ? Positioned(top: 144, left: 288, child: Image.asset('assets/images/tasks/day_3_primary.png', scale: 2.95)) : Container(),
+                    claimedArr.contains(3) ? Positioned(top: 144, left: 288, child: Image.asset('assets/images/tasks/day_3_plain.png', scale: 2.95)) : Container(),
                     // day 4
                     weekday < 4 ? Positioned(top: 236, left: 211, child: Image.asset('assets/images/tasks/day_4_default.png', scale: 2.95)) : Container(),
-                    weekday == 4 && !ClaimedArr.contains(4) ? Positioned(top: 236, left: 211, child: Image.asset('assets/images/tasks/day_4_primary.png', scale: 2.95)) : Container(),
-                    ClaimedArr.contains(4) ? Positioned(top: 236, left: 211, child: Image.asset('assets/images/tasks/day_4_plain.png', scale: 2.95)) : Container(),
+                    weekday == 4 && !claimedArr.contains(4) ? Positioned(top: 236, left: 211, child: Image.asset('assets/images/tasks/day_4_primary.png', scale: 2.95)) : Container(),
+                    claimedArr.contains(4) ? Positioned(top: 236, left: 211, child: Image.asset('assets/images/tasks/day_4_plain.png', scale: 2.95)) : Container(),
                     // day 5
                     weekday < 5 ? Positioned(top: 226, left: 106, child: Image.asset('assets/images/tasks/day_5_default.png', scale: 2.95)) : Container(),
-                    weekday == 5 && !ClaimedArr.contains(5) ? Positioned(top: 226, left: 106, child: Image.asset('assets/images/tasks/day_5_primary.png', scale: 2.95)) : Container(),
-                    ClaimedArr.contains(5) ? Positioned(top: 226, left: 106, child: Image.asset('assets/images/tasks/day_5_plain.png', scale: 2.95)) : Container(),
+                    weekday == 5 && !claimedArr.contains(5) ? Positioned(top: 226, left: 106, child: Image.asset('assets/images/tasks/day_5_primary.png', scale: 2.95)) : Container(),
+                    claimedArr.contains(5) ? Positioned(top: 226, left: 106, child: Image.asset('assets/images/tasks/day_5_plain.png', scale: 2.95)) : Container(),
                     // day 6
                     weekday < 6 ? Positioned(top: 136, left: 67, child: Image.asset('assets/images/tasks/day_6_default.png', scale: 2.95)) : Container(),
-                    weekday == 6 && !ClaimedArr.contains(6) ? Positioned(top: 136, left: 67, child: Image.asset('assets/images/tasks/day_6_primary.png', scale: 2.95)) : Container(),
-                    ClaimedArr.contains(6) ? Positioned(top: 136, left: 67, child: Image.asset('assets/images/tasks/day_6_plain.png', scale: 2.95)) : Container(),
+                    weekday == 6 && !claimedArr.contains(6) ? Positioned(top: 136, left: 67, child: Image.asset('assets/images/tasks/day_6_primary.png', scale: 2.95)) : Container(),
+                    claimedArr.contains(6) ? Positioned(top: 136, left: 67, child: Image.asset('assets/images/tasks/day_6_plain.png', scale: 2.95)) : Container(),
                     // day 7
                     weekday < 7 ? Positioned(top: 42, left: 65, child: Image.asset('assets/images/tasks/day_7_default.png', scale: 2.95)) : Container(),
-                    weekday == 7 && !ClaimedArr.contains(7) ? Positioned(top: 42, left: 65, child: Image.asset('assets/images/tasks/day_7_primary.png', scale: 2.95)) : Container(),
-                    ClaimedArr.contains(7) ? Positioned(top: 42, left: 65, child: Image.asset('assets/images/tasks/day_7_plain.png', scale: 2.95)) : Container(),
+                    weekday == 7 && !claimedArr.contains(7) ? Positioned(top: 42, left: 65, child: Image.asset('assets/images/tasks/day_7_primary.png', scale: 2.95)) : Container(),
+                    claimedArr.contains(7) ? Positioned(top: 42, left: 65, child: Image.asset('assets/images/tasks/day_7_plain.png', scale: 2.95)) : Container(),
 
                     Positioned(
                       child: Column(
@@ -103,8 +103,8 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                                 borderRadius: BorderRadius.circular(20)
                               ),
                             ),
-                            onPressed: is_claimed ? null : _onTodayClaim,
-                            child: Text(is_claimed ? 'Claimed' : 'Claim', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            onPressed: isClaimed ? null : _onTodayClaim,
+                            child: Text(isClaimed ? 'Claimed' : 'Claim', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                           )
                         ],
                       )
@@ -118,7 +118,6 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                       Image.asset('assets/images/tasks/task_list.png'),
                       SizedBox(height: 10),
                       Container(
-                        width: MediaQuery.of(context).size.width,
                         height: 64,
                         padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
@@ -160,7 +159,6 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                       ),
                       SizedBox(height: 16),
                       Container(
-                        width: MediaQuery.of(context).size.width,
                         height: 64,
                         padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
@@ -199,7 +197,6 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                       ),
                       SizedBox(height: 16),
                       Container(
-                        width: MediaQuery.of(context).size.width,
                         height: 64,
                         padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
@@ -238,7 +235,6 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                       ),
                       SizedBox(height: 16),
                       Container(
-                        width: MediaQuery.of(context).size.width,
                         height: 64,
                         padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
@@ -277,7 +273,6 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                       ),
                       SizedBox(height: 16),
                       Container(
-                        width: MediaQuery.of(context).size.width,
                         height: 64,
                         padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
@@ -308,7 +303,7 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                                 overlayColor: Colors.white,
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                               ),
-                              child: Text('Share', style: TextStyle(color: Colors.white, fontSize: 16)),
+                              child: Text('Claim', style: TextStyle(color: Colors.white, fontSize: 16)),
                               onPressed: () {}
                             )
                           ],
@@ -316,7 +311,6 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                       ),
                       SizedBox(height: 16),
                       Container(
-                        width: MediaQuery.of(context).size.width,
                         height: 64,
                         padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
@@ -347,7 +341,7 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                                 overlayColor: Colors.white,
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                               ),
-                              child: Text('Share', style: TextStyle(color: Colors.white, fontSize: 16)),
+                              child: Text('Claim', style: TextStyle(color: Colors.white, fontSize: 16)),
                               onPressed: () {}
                             )
                           ],
@@ -355,7 +349,6 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                       ),
                       SizedBox(height: 16),
                       Container(
-                        width: MediaQuery.of(context).size.width,
                         height: 64,
                         padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
@@ -386,7 +379,7 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                                 overlayColor: Colors.white,
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                               ),
-                              child: Text('Share', style: TextStyle(color: Colors.white, fontSize: 16)),
+                              child: Text('Claim', style: TextStyle(color: Colors.white, fontSize: 16)),
                               onPressed: () {}
                             )
                           ],
@@ -394,7 +387,6 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                       ),
                       SizedBox(height: 16),
                       Container(
-                        width: MediaQuery.of(context).size.width,
                         height: 64,
                         padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
@@ -425,7 +417,7 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                                 overlayColor: Colors.white,
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                               ),
-                              child: Text('Share', style: TextStyle(color: Colors.white, fontSize: 16)),
+                              child: Text('Claim', style: TextStyle(color: Colors.white, fontSize: 16)),
                               onPressed: () {}
                             )
                           ],

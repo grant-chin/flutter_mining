@@ -36,6 +36,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   shake_animation_widget: ^3.0.4
+  animate_do: ^4.2.0
 
 dev_dependencies:
   flutter_test:
@@ -82,7 +83,16 @@ flutter:
   fonts:
     - family: Lexend
       fonts: 
-        - asset: assets/fonts/Lexend-VariableFont_wght.ttf
+        - asset: assets/fonts/Lexend/Lexend-VariableFont_wght.ttf
+        - asset: assets/fonts/Lexend/static/Lexend-Black.ttf
+        - asset: assets/fonts/Lexend/static/Lexend-Bold.ttf
+        - asset: assets/fonts/Lexend/static/Lexend-ExtraBold.ttf
+        - asset: assets/fonts/Lexend/static/Lexend-ExtraLight.ttf
+        - asset: assets/fonts/Lexend/static/Lexend-Light.ttf
+        - asset: assets/fonts/Lexend/static/Lexend-Medium.ttf
+        - asset: assets/fonts/Lexend/static/Lexend-Regular.ttf
+        - asset: assets/fonts/Lexend/static/Lexend-SemiBold.ttf
+        - asset: assets/fonts/Lexend/static/Lexend-Thin.ttf
           style: italic
   #   - family: Schyler
   #     fonts:

@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import 'package:shake_animation_widget/shake_animation_widget.dart';
-
+import 'package:animate_do/animate_do.dart';
 
 class MinePage extends StatefulWidget {
   const MinePage({super.key});
@@ -13,10 +12,10 @@ class MinePage extends StatefulWidget {
 
 class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin {
   int _counter = 0;
-  int _level = 1; // 等级
-  int _exp = 0; // 经验值
+  final int _level = 1; // 等级
+  final int _exp = 0; // 经验值
   bool isClick = false; // 用于按钮按下缩放效果
-  int _stroke_index = -1; // 当前显示圆环进度条下标
+  int strokeIndex = -1; // 当前显示圆环进度条下标
   bool _mining = false; // 是否正在mining状态
 
   // 显示Level Tips的方法
@@ -148,7 +147,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                   ),
                 ),
                 Spacer(),
-                Container(
+                SizedBox(
                   width: 190,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -317,129 +316,129 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                   children: [
                     Image.asset('assets/images/mine/mine_bg.png'),
                     Image.asset('assets/images/mine/mine_ring_bg.png', scale: 2.76,),
-                    Positioned(top: 136, child: Opacity(opacity: _stroke_index > 0 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_1.png', scale: 2.8),)),
+                    Positioned(top: 136, child: Opacity(opacity: strokeIndex > 0 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_1.png', scale: 2.8),)),
                     Positioned(top: 137, left: MediaQuery.of(context).size.width / 2 + 20, child: Opacity(
-                      opacity: _stroke_index > 1 ? 1 : 0,
+                      opacity: strokeIndex > 1 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_2.png', scale: 2.8))
                     ),
                     Positioned(top: 144, left: MediaQuery.of(context).size.width / 2 + 46, child: Opacity(
-                      opacity: _stroke_index > 2 ? 1 : 0,
+                      opacity: strokeIndex > 2 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_3.png', scale: 2.8))
                     ),
                     Positioned(top: 157, left: MediaQuery.of(context).size.width / 2 + 70, child: Opacity(
-                      opacity: _stroke_index > 3 ? 1 : 0,
+                      opacity: strokeIndex > 3 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_4.png', scale: 2.8))
                     ),
                     Positioned(top: 174, left: MediaQuery.of(context).size.width / 2 + 92, child: Opacity(
-                      opacity: _stroke_index > 4 ? 1 : 0,
+                      opacity: strokeIndex > 4 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_5.png', scale: 2.8))
                     ),
                     Positioned(top: 196, left: MediaQuery.of(context).size.width / 2 + 109, child: Opacity(
-                      opacity: _stroke_index > 5 ? 1 : 0,
+                      opacity: strokeIndex > 5 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_6.png', scale: 2.8))
                     ),
                     Positioned(top: 222, left: MediaQuery.of(context).size.width / 2 + 124, child: Opacity(
-                      opacity: _stroke_index > 6 ? 1 : 0,
+                      opacity: strokeIndex > 6 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_7.png', scale: 2.8))
                     ),
                     Positioned(top: 250, left: MediaQuery.of(context).size.width / 2 + 133, child: Opacity(
-                      opacity: _stroke_index > 7 ? 1 : 0,
+                      opacity: strokeIndex > 7 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_8.png', scale: 2.8))
                     ),
                     Positioned(top: 278, left: MediaQuery.of(context).size.width / 2 + 136, child: Opacity(
-                      opacity: _stroke_index > 8 ? 1 : 0,
+                      opacity: strokeIndex > 8 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_9.png', scale: 2.8))
                     ),
                     Positioned(top: 306, left: MediaQuery.of(context).size.width / 2 + 132, child: Opacity(
-                      opacity: _stroke_index > 9 ? 1 : 0,
+                      opacity: strokeIndex > 9 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_10.png', scale: 2.8))
                     ),
                     Positioned(top: 332, left: MediaQuery.of(context).size.width / 2 + 124, child: Opacity(
-                      opacity: _stroke_index > 10 ? 1 : 0,
+                      opacity: strokeIndex > 10 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_11.png', scale: 2.8))
                     ),
                     Positioned(top: 356, left: MediaQuery.of(context).size.width / 2 + 110, child: Opacity(
-                      opacity: _stroke_index > 11 ? 1 : 0,
+                      opacity: strokeIndex > 11 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_12.png', scale: 2.8))
                     ),
                     Positioned(top: 377, left: MediaQuery.of(context).size.width / 2 + 91, child: Opacity(
-                      opacity: _stroke_index > 12 ? 1 : 0,
+                      opacity: strokeIndex > 12 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_13.png', scale: 2.8))
                     ),
                     Positioned(top: 395, left: MediaQuery.of(context).size.width / 2 + 70, child: Opacity(
-                      opacity: _stroke_index > 13 ? 1 : 0,
+                      opacity: strokeIndex > 13 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_14.png', scale: 2.8))
                     ),
                     Positioned(top: 410, left: MediaQuery.of(context).size.width / 2 + 46, child: Opacity(
-                      opacity: _stroke_index > 14 ? 1 : 0,
+                      opacity: strokeIndex > 14 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_15.png', scale: 2.8))
                     ),
                     Positioned(top: 418, left: MediaQuery.of(context).size.width / 2 + 20, child: Opacity(
-                      opacity: _stroke_index > 15 ? 1 : 0,
+                      opacity: strokeIndex > 15 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_16.png', scale: 2.8))
                     ),
                     Positioned(top: 422, child: Opacity(
-                      opacity: _stroke_index > 16 ? 1 : 0,
+                      opacity: strokeIndex > 16 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_17.png', scale: 2.8))
                     ),
                     Positioned(top: 418, right: MediaQuery.of(context).size.width / 2 + 20, child: Opacity(
-                      opacity: _stroke_index > 17 ? 1 : 0,
+                      opacity: strokeIndex > 17 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_18.png', scale: 2.8))
                     ),
                     Positioned(top: 410, right: MediaQuery.of(context).size.width / 2 + 46, child: Opacity(
-                      opacity: _stroke_index > 18 ? 1 : 0,
+                      opacity: strokeIndex > 18 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_19.png', scale: 2.8))
                     ),
                     Positioned(top: 395, right: MediaQuery.of(context).size.width / 2 + 70, child: Opacity(
-                      opacity: _stroke_index > 19 ? 1 : 0,
+                      opacity: strokeIndex > 19 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_20.png', scale: 2.8))
                     ),
                     Positioned(top: 377, right: MediaQuery.of(context).size.width / 2 + 91, child: Opacity(
-                      opacity: _stroke_index > 20 ? 1 : 0,
+                      opacity: strokeIndex > 20 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_21.png', scale: 2.8))
                     ),
                     Positioned(top: 356, right: MediaQuery.of(context).size.width / 2 + 110, child: Opacity(
-                      opacity: _stroke_index > 21 ? 1 : 0,
+                      opacity: strokeIndex > 21 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_22.png', scale: 2.8))
                     ),
                     Positioned(top: 332, right: MediaQuery.of(context).size.width / 2 + 124, child: Opacity(
-                      opacity: _stroke_index > 22 ? 1 : 0,
+                      opacity: strokeIndex > 22 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_23.png', scale: 2.8))
                     ),
                     Positioned(top: 306, right: MediaQuery.of(context).size.width / 2 + 132, child: Opacity(
-                      opacity: _stroke_index > 23 ? 1 : 0,
+                      opacity: strokeIndex > 23 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_24.png', scale: 2.8))
                     ),
                     Positioned(top: 278, right: MediaQuery.of(context).size.width / 2 + 136, child: Opacity(
-                      opacity: _stroke_index > 24 ? 1 : 0,
+                      opacity: strokeIndex > 24 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_25.png', scale: 2.8))
                     ),
                     Positioned(top: 250, right: MediaQuery.of(context).size.width / 2 + 133, child: Opacity(
-                      opacity: _stroke_index > 25 ? 1 : 0,
+                      opacity: strokeIndex > 25 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_26.png', scale: 2.8))
                     ),
                     Positioned(top: 222, right: MediaQuery.of(context).size.width / 2 + 124, child: Opacity(
-                      opacity: _stroke_index > 26 ? 1 : 0,
+                      opacity: strokeIndex > 26 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_27.png', scale: 2.8))
                     ),
                     Positioned(top: 196, right: MediaQuery.of(context).size.width / 2 + 109, child: Opacity(
-                      opacity: _stroke_index > 27 ? 1 : 0,
+                      opacity: strokeIndex > 27 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_28.png', scale: 2.8))
                     ),
                     Positioned(top: 174, right: MediaQuery.of(context).size.width / 2 + 92, child: Opacity(
-                      opacity: _stroke_index > 28 ? 1 : 0,
+                      opacity: strokeIndex > 28 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_29.png', scale: 2.8))
                     ),
                     Positioned(top: 157, right: MediaQuery.of(context).size.width / 2 + 70, child: Opacity(
-                      opacity: _stroke_index > 29 ? 1 : 0,
+                      opacity: strokeIndex > 29 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_30.png', scale: 2.8))
                     ),
                     Positioned(top: 144, right: MediaQuery.of(context).size.width / 2 + 46, child: Opacity(
-                      opacity: _stroke_index > 30 ? 1 : 0,
+                      opacity: strokeIndex > 30 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_31.png', scale: 2.8))
                     ),
                     Positioned(top: 137, right: MediaQuery.of(context).size.width / 2 + 20, child: Opacity(
-                      opacity: _stroke_index > 31 ? 1 : 0,
+                      opacity: strokeIndex > 31 ? 1 : 0,
                       child: Image.asset('assets/images/mine/stroke_32.png', scale: 2.8))
                     ),
                     buildShakeAnimationWidget()
@@ -485,7 +484,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                 ),
                 _mining ? Positioned(
                   bottom: 106,
-                  child: Container(
+                  child: SizedBox(
                     width: MediaQuery.of(context).size.width,
                     child: Row(
                       children: [
@@ -627,16 +626,16 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                                 Timer.periodic(const Duration(milliseconds: 40), (timer) {
                                   if (!_mining) timer.cancel();
                                   setState(() {
-                                    if (_stroke_index < 33) {
-                                      _stroke_index++;
+                                    if (strokeIndex < 33) {
+                                      strokeIndex++;
                                     } else {
-                                      _stroke_index = 1;
+                                      strokeIndex = 1;
                                     }
                                   });
                                 });
                               } else {
                                 _mining = false;
-                                _stroke_index = -1;
+                                strokeIndex = -1;
                               }
                             });
                           }
@@ -693,6 +692,18 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
             // }
             _shakeAnimationController.start();
             _counter += 5 * _level;
+
+            Overlay.of(context).insert(OverlayEntry(builder: (context) => Positioned(
+              top: 426,
+              left: 260,
+              child: FadeOutUp(child: Text('+5', style: TextStyle(
+                color: Color.fromRGBO(36, 245, 219, 1),
+                fontSize: 24,
+                fontWeight: FontWeight.w900,
+                fontFamily: 'Lexend',
+                decoration: TextDecoration.none
+              )))
+            )));
           });
         },
       )

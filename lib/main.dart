@@ -4,7 +4,7 @@ import 'pages/profile.dart';
 import 'pages/setting.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
