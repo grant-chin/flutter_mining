@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shake_animation_widget/shake_animation_widget.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MinePage extends StatefulWidget {
   const MinePage({super.key});
@@ -11,12 +12,26 @@ class MinePage extends StatefulWidget {
 }
 
 class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin {
+  final Future<SharedPreferencesWithCache> _prefs =
+      SharedPreferencesWithCache.create(
+        cacheOptions: const SharedPreferencesWithCacheOptions(allowList: <String>{'counter'})
+      );
   int _counter = 0;
   final int _level = 1; // 等级
   final int _exp = 0; // 经验值
   bool isClick = false; // 用于按钮按下缩放效果
   int strokeIndex = -1; // 当前显示圆环进度条下标
   bool _mining = false; // 是否正在mining状态
+
+  // @override
+  // initState() {
+  //   super.initState();
+    
+  //   setState(() async {
+  //     final SharedPreferencesWithCache prefs = await _prefs;
+  //     _counter = prefs.getInt('counter') ?? 0;
+  //   });
+  // }
 
   // 显示Level Tips的方法
   _showLevelTips() {
@@ -27,7 +42,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
       builder: (_) => Stack(
         children: [
           Positioned(
-            top: 110,
+            top: kToolbarHeight + 28,
             right: 12,
             child: Image.asset('assets/images/mine/level_block.png', width: 226)
           )
@@ -94,12 +109,14 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      padding: const EdgeInsets.fromLTRB(0, kToolbarHeight + 12, 0, 0),
+      padding: const EdgeInsets.fromLTRB(0, kToolbarHeight, 0, 0),
       decoration: BoxDecoration(color: Color(0xff0F0F12)),
       child: Column(
+        mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           Container(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+            // height: 50,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: <Widget>[
                 InkWell(
@@ -120,9 +137,9 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                           child: Image.asset('assets/images/avator/lion.jpeg', fit: BoxFit.cover),
                         )
                       ),
-                      Container(
+                      SizedBox(width: 16),
+                      SizedBox(
                         width: 120,
-                        margin: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
@@ -210,14 +227,14 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
               ],
             ),
           ),
+          SizedBox(height: 16),
           Container(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+            height: 54,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
                 Expanded(
                   child: Container(
-                    height: 54,
-                    margin: EdgeInsets.only(right: 8),
                     padding: EdgeInsets.all(4),
                     decoration: BoxDecoration(
                       color: Color.fromRGBO(112, 21, 239, 0.1),
@@ -243,10 +260,10 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                     ),
                   ),
                 ),
+                SizedBox(width: 16),
                 Expanded(
                   child: Container(
                     height: 54,
-                    margin: EdgeInsets.only(left: 8),
                     padding: EdgeInsets.all(4),
                     decoration: BoxDecoration(
                       color: Color.fromRGBO(92, 81, 255, 0.1),
@@ -272,10 +289,10 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                     ),
                   ),
                 ),
+                SizedBox(width: 16),
                 Expanded(
                   child: Container(
                     height: 54,
-                    margin: EdgeInsets.only(left: 16),
                     padding: EdgeInsets.all(4),
                     decoration: BoxDecoration(
                       color: Color.fromRGBO(255, 0, 255, 0.1),
@@ -304,18 +321,18 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
               ],
             )
           ),
-          Container(
+          SizedBox(height: 16),
+          Expanded(child: Container(
             width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height - 317,
-            padding: EdgeInsets.only(top: 18),
+            padding: EdgeInsets.only(top: 16),
             child: Stack(
-              alignment: Alignment.topCenter , //指定未定位或部分定位widget的对齐方式
+              alignment: Alignment.center , //指定未定位或部分定位widget的对齐方式
               children: <Widget>[
                 Stack(
                   alignment: Alignment.center,
                   children: [
                     Image.asset('assets/images/mine/mine_bg.png'),
-                    Image.asset('assets/images/mine/mine_ring_bg.png', scale: 2.76,),
+                    Image.asset('assets/images/mine/mine_ring_bg.png', scale: 2.76),
                     Positioned(top: 136, child: Opacity(opacity: strokeIndex > 0 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_1.png', scale: 2.8),)),
                     Positioned(top: 137, left: MediaQuery.of(context).size.width / 2 + 20, child: Opacity(
                       opacity: strokeIndex > 1 ? 1 : 0,
@@ -444,7 +461,10 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                     buildShakeAnimationWidget()
                   ],
                 ),
-                Text('Pool Mining', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),),
+                Positioned(
+                  top: 0,
+                  child: Text('Pool Mining', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold))
+                ),
                 Positioned(
                   top: 2,
                   right: 16,
@@ -483,7 +503,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                   )
                 ),
                 _mining ? Positioned(
-                  bottom: 106,
+                  bottom: 96,
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width,
                     child: Row(
@@ -646,7 +666,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                 )
               ],
             ),
-          ),
+          ))
         ],
       ),
     );
@@ -677,8 +697,10 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
             isClick = true;
           });
         },
-        onPointerUp: (event) {
-          setState(() {
+        onPointerUp: (event) async {
+          final SharedPreferencesWithCache prefs = await _prefs;
+          final int counter = (prefs.getInt('counter') ?? 0) + 5 * _level;
+          setState(() async {
             isClick = false;
             // //判断抖动动画是否正在执行
             // if (_shakeAnimationController.animationRunging) {
@@ -691,7 +713,8 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
             //   _shakeAnimationController.start(shakeCount: 1);
             // }
             _shakeAnimationController.start();
-            _counter += 5 * _level;
+            await prefs.setInt('counter', counter);
+            _counter = counter;
 
             Overlay.of(context).insert(OverlayEntry(builder: (context) => Positioned(
               top: 426,
