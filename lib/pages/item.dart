@@ -3,6 +3,13 @@ import 'dart:ui';
 import 'dart:async';
 import 'dart:math';
 
+String miner = ''; // 当前选择奖品 Rocket/Booster/NFTs
+int minerCost = 0; // 抽奖花费
+bool isMinting = false; // 是否正在抽奖
+int mintIndex = -1;
+int mintEndIndex = 0; // 结束点-控制奖品落点
+int mintRound = 0; // 圈数-控制抽奖动画
+
 class ItemPage extends StatefulWidget {
   const ItemPage({super.key});
 
@@ -11,17 +18,20 @@ class ItemPage extends StatefulWidget {
 }
 
 class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin {
-  String miner = '';
-  bool isMinting = false;
-  int mintIndex = -1;
-  int mintEndIndex = 0;
-  int mintRound = 0;
-
   // 选择铸造道具
   _setMiner(name) {
     setState(() {
-      if (miner != name) { miner = name; }
-      else { miner = ''; }
+      if (miner != name) {
+        miner = name;
+        switch(name) {
+          case 'Rocket': minerCost = 1000; break;
+          case 'Booster': minerCost = 2000; break;
+          case 'NFTs': minerCost = 10000; break;
+        }
+      } else {
+        miner = '';
+        minerCost = 0;
+      }
     });
   }
 
@@ -30,112 +40,34 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
     setState(() {
       if (isMinting) return;
       isMinting = true;
-      Timer.periodic(const Duration(milliseconds: 50), (timer) {
-        setState(() {
-          // 轮盘动画index映射
-          if (mintIndex < 7) {
-            mintIndex++;
-          } else {
-            mintIndex = 0;
-            mintRound++;
-          }
-          // 控制结束落点
-          switch(miner) {
-            case 'Rocket': mintEndIndex = 0; break;
-            case 'Booster': mintEndIndex = 5; break;
-            case 'NFTs': mintEndIndex = [1, 2, 3, 4, 6, 7][Random().nextInt(6)]; break;
-          }
-          if (mintRound > 3 && mintIndex == mintEndIndex) {
-            isMinting = false;
-            mintRound = 0;
-            timer.cancel();
+      // 控制结束落点
+      switch(miner) {
+        case 'Rocket': mintEndIndex = 0; break;
+        case 'Booster': mintEndIndex = 5; break;
+        case 'NFTs': mintEndIndex = [1, 2, 3, 4, 6, 7][Random().nextInt(6)]; break;
+      }
+    });
+    Timer.periodic(const Duration(milliseconds: 50), (timer) {
+      setState(() {
+        // 轮盘动画index映射
+        if (mintIndex < 7) {
+          mintIndex++;
+        } else {
+          mintIndex = 0;
+          mintRound++;
+        }
+        if (mintRound > 3 && mintIndex == mintEndIndex) {
+          isMinting = false;
+          mintRound = 0;
+          timer.cancel();
 
-            showDialog(// 传入 context
-              context: context,
-              useSafeArea: false,
-              // 构建 Dialog 的视图
-              builder: (_) => Stack(
-                alignment: Alignment.center,
-                children: [
-                  Positioned.fill(
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(
-                        sigmaX: 2,
-                        sigmaY: 2,
-                      ),
-                      child: Container(
-                        color: Colors.black12,
-                      ),
-                    ),
-                  ),
-                  Positioned(top: 180, child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Image.asset('assets/images/item/dialog_miner.png', width: MediaQuery.of(context).size.width,),
-                      Positioned(bottom: 30, child: SizedBox(
-                        width: MediaQuery.of(context).size.width - 160,
-                        height: MediaQuery.of(context).size.width - 150,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('You’ve Unlocked a Mystery Item!', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8)),),
-                            Container(
-                              width: 160,
-                              height: 144,
-                              padding: EdgeInsets.symmetric(vertical: 10),
-                              decoration: BoxDecoration(
-                                color: Color.fromRGBO(35, 36, 41, 1),
-                                borderRadius: BorderRadius.circular(16)
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: [
-                                  Image.asset('assets/icons/icon_rocket.png', width: 50),
-                                  Text('Miner', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),),
-                                  Text('20 Gh/s', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),)
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width,
-                              height: 58,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  overlayColor: Colors.white,
-                                  foregroundColor: Colors.white,
-                                  backgroundColor: Color.fromRGBO(112, 21, 239, 1),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                ),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Text('Claim it', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                              ),
-                            )
-                          ],
-                        ),
-                      ))
-                    ],
-                  )),
-                  Positioned(
-                    top: MediaQuery.of(context).size.width + 210,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        overlayColor: Colors.transparent,
-                        backgroundColor: Colors.transparent,
-                        padding: EdgeInsets.all(0),
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Image.asset('assets/icons/icon_close.png', width: 40)
-                    )
-                  )
-                ],
-              )
-            );
-          }
-        });
+          showDialog(// 传入 context
+            context: context,
+            useSafeArea: false,
+            // 构建 Dialog 的视图
+            builder: (_) => minerDialog(context)
+          );
+        }
       });
     });
   }
@@ -152,6 +84,7 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
       child: Column(
         children: [
           Image.asset('assets/images/item/item_title.png'),
+          Spacer(),
           Container(
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.fromLTRB(16, 12, 16, 12),
@@ -175,7 +108,7 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
                   child: Image.asset('assets/images/item/tips_icon.png', width: 180,)
                 ),
                 Positioned(
-                  bottom: 32,
+                  bottom: MediaQuery.of(context).size.width / 13,
                   child: Text('Select the item you want to mint', style: TextStyle(
                     color: Color.fromRGBO(249, 249, 249, 0.8),
                     fontSize: 16,
@@ -195,8 +128,8 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
                           Stack(
                             alignment: Alignment.center,
                             children: [
-                              Image.asset('assets/images/item/bot_item.png', width: 102,),
-                              mintIndex == 0 ? Image.asset('assets/images/item/bot_active.png', width: 102,) : Container(),
+                              Image.asset('assets/images/item/bot_item.png', width: MediaQuery.of(context).size.width / 4.5),
+                              mintIndex == 0 ? Image.asset('assets/images/item/bot_active.png', width: MediaQuery.of(context).size.width / 4.5) : Container(),
                               Column(
                                 children: [
                                   Image.asset('assets/icons/icon_rocket.png', width: 48,),
@@ -209,8 +142,8 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
                           Stack(
                             alignment: Alignment.center,
                             children: [
-                              Image.asset('assets/images/item/bot_item.png', width: 102,),
-                              mintIndex == 1 ? Image.asset('assets/images/item/bot_active.png', width: 102,) : Container(),
+                              Image.asset('assets/images/item/bot_item.png', width: MediaQuery.of(context).size.width / 4.5),
+                              mintIndex == 1 ? Image.asset('assets/images/item/bot_active.png', width: MediaQuery.of(context).size.width / 4.5) : Container(),
                               Column(
                                 children: [
                                   Image.asset('assets/icons/icon_NFT.png', width: 48,),
@@ -223,8 +156,8 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
                           Stack(
                             alignment: Alignment.center,
                             children: [
-                              Image.asset('assets/images/item/bot_item.png', width: 102,),
-                              mintIndex == 2 ? Image.asset('assets/images/item/bot_active.png', width: 102,) : Container(),
+                              Image.asset('assets/images/item/bot_item.png', width: MediaQuery.of(context).size.width / 4.5),
+                              mintIndex == 2 ? Image.asset('assets/images/item/bot_active.png', width: MediaQuery.of(context).size.width / 4.5) : Container(),
                               Column(
                                 children: [
                                   Image.asset('assets/icons/icon_NFT.png', width: 48,),
@@ -242,8 +175,8 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
                           Stack(
                             alignment: Alignment.center,
                             children: [
-                              Image.asset('assets/images/item/bot_item.png', width: 102,),
-                              mintIndex == 7 ? Image.asset('assets/images/item/bot_active.png', width: 102,) : Container(),
+                              Image.asset('assets/images/item/bot_item.png', width: MediaQuery.of(context).size.width / 4.5),
+                              mintIndex == 7 ? Image.asset('assets/images/item/bot_active.png', width: MediaQuery.of(context).size.width / 4.5) : Container(),
                               Column(
                                 children: [
                                   Image.asset('assets/icons/icon_NFT.png', width: 48,),
@@ -255,20 +188,21 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
                           ),
                           Stack(
                             alignment: Alignment.center,
+                            clipBehavior: Clip.none,
                             children: [
-                              Image.asset('assets/images/item/turn_value.png', width: 102,),
+                              Image.asset('assets/images/item/turn_value.png', width: MediaQuery.of(context).size.width / 4.5),
                               Positioned(
-                                top: 22,
+                                top: 20,
                                 child: Text('Est. Cost', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 14),),
                               ),
                               Positioned(
-                                bottom: 24,
+                                top: 38,
                                 child: Row(
                                   children: [
                                     Image.asset('assets/icons/icon_coin.png', width: 30,),
                                     Container(
                                       margin: EdgeInsets.only(top: 5, left: 2),
-                                      child: Text('0', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),),
+                                      child: Text('$minerCost', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),),
                                     )
                                   ],
                                 ),
@@ -278,8 +212,8 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
                           Stack(
                             alignment: Alignment.center,
                             children: [
-                              Image.asset('assets/images/item/bot_item.png', width: 102,),
-                              mintIndex == 3 ? Image.asset('assets/images/item/bot_active.png', width: 102,) : Container(),
+                              Image.asset('assets/images/item/bot_item.png', width: MediaQuery.of(context).size.width / 4.5),
+                              mintIndex == 3 ? Image.asset('assets/images/item/bot_active.png', width: MediaQuery.of(context).size.width / 4.5) : Container(),
                               Column(
                                 children: [
                                   Image.asset('assets/icons/icon_NFT.png', width: 48,),
@@ -297,8 +231,8 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
                           Stack(
                             alignment: Alignment.center,
                             children: [
-                              Image.asset('assets/images/item/bot_item.png', width: 102,),
-                              mintIndex == 6 ? Image.asset('assets/images/item/bot_active.png', width: 102,) : Container(),
+                              Image.asset('assets/images/item/bot_item.png', width: MediaQuery.of(context).size.width / 4.5),
+                              mintIndex == 6 ? Image.asset('assets/images/item/bot_active.png', width: MediaQuery.of(context).size.width / 4.5) : Container(),
                               Column(
                                 children: [
                                   Image.asset('assets/icons/icon_NFT.png', width: 48,),
@@ -311,8 +245,8 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
                           Stack(
                             alignment: Alignment.center,
                             children: [
-                              Image.asset('assets/images/item/bot_item.png', width: 102,),
-                              mintIndex == 5 ? Image.asset('assets/images/item/bot_active.png', width: 102,) : Container(),
+                              Image.asset('assets/images/item/bot_item.png', width: MediaQuery.of(context).size.width / 4.5),
+                              mintIndex == 5 ? Image.asset('assets/images/item/bot_active.png', width: MediaQuery.of(context).size.width / 4.5) : Container(),
                               Column(
                                 children: [
                                   Image.asset('assets/icons/icon_alarm.png', width: 48,),
@@ -325,8 +259,8 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
                           Stack(
                             alignment: Alignment.center,
                             children: [
-                              Image.asset('assets/images/item/bot_item.png', width: 102,),
-                              mintIndex == 4 ? Image.asset('assets/images/item/bot_active.png', width: 102,) : Container(),
+                              Image.asset('assets/images/item/bot_item.png', width: MediaQuery.of(context).size.width / 4.5),
+                              mintIndex == 4 ? Image.asset('assets/images/item/bot_active.png', width: MediaQuery.of(context).size.width / 4.5) : Container(),
                               Column(
                                 children: [
                                   Image.asset('assets/icons/icon_NFT.png', width: 48,),
@@ -344,6 +278,7 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
               ],
             ),
           ),
+          Spacer(),
           Container(
             margin: EdgeInsets.only(top: 12),
             padding: EdgeInsets.only(left: 16, right: 16),
@@ -366,7 +301,7 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Image.asset('assets/icons/icon_rocket.png', width: 38),
+                        Image.asset('assets/icons/icon_rocket.png', width: 34),
                         SizedBox(width: 4),
                         Text('Rocket', style: TextStyle(color: Colors.white, fontSize: 12))
                       ],
@@ -390,7 +325,7 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Image.asset('assets/icons/icon_alarm.png', width: 38),
+                        Image.asset('assets/icons/icon_alarm.png', width: 34),
                         SizedBox(width: 4),
                         Text('Booster', style: TextStyle(color: Colors.white, fontSize: 12))
                       ],
@@ -414,7 +349,7 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Image.asset('assets/icons/icon_NFT.png', width: 38),
+                        Image.asset('assets/icons/icon_NFT.png', width: 34),
                         SizedBox(width: 4),
                         Text('NFTs', style: TextStyle(color: Colors.white, fontSize: 12))
                       ],
@@ -450,4 +385,120 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
       )
     );
   }
+}
+
+// 铸造成功弹窗
+Widget minerDialog(context) {
+  final imgs = {
+    'Rocket': 'assets/icons/icon_rocket.png',
+    'Booster': 'assets/icons/icon_alarm.png',
+    'NFTs': 'assets/icons/icon_NFT.png',
+  };
+
+  return Stack(
+    alignment: Alignment.center,
+    children: [
+      Positioned.fill(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(
+            sigmaX: 2,
+            sigmaY: 2,
+          ),
+          child: Container(
+            color: Colors.black12,
+          ),
+        ),
+      ),
+      Positioned(top: 180, child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Image.asset('assets/images/item/dialog_miner.png', width: MediaQuery.of(context).size.width,),
+          Positioned(bottom: 30, child: SizedBox(
+            width: MediaQuery.of(context).size.width - 160,
+            height: MediaQuery.of(context).size.width - 150,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('You’ve Unlocked a Mystery Item!', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8)),),
+                Container(
+                  width: 160,
+                  height: 144,
+                  padding: EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(35, 36, 41, 1),
+                    borderRadius: BorderRadius.circular(16)
+                  ),
+                  child: miner == 'NFTs' ? dialogNftWidget() : Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Image.asset(imgs[miner]!, width: 50),
+                      Text(miner == 'Rocket' ? 'Miner' : 'Booster', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),),
+                      Text(miner == 'Rocket' ? '20 Gh/s' : '2h', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),)
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: 58,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      overlayColor: Colors.white,
+                      foregroundColor: Colors.white,
+                      backgroundColor: Color.fromRGBO(112, 21, 239, 1),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('Claim it', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  ),
+                )
+              ],
+            ),
+          ))
+        ],
+      )),
+      Positioned(
+        top: MediaQuery.of(context).size.width + 210,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            overlayColor: Colors.transparent,
+            backgroundColor: Colors.transparent,
+            padding: EdgeInsets.all(0),
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Image.asset('assets/icons/icon_close.png', width: 40)
+        )
+      )
+    ],
+  );
+}
+
+// NFT铸造成功内容
+Widget dialogNftWidget() {
+  final nfts = [
+    'assets/images/NFTs/nft_1.png',
+    'assets/images/NFTs/nft_2.png',
+    'assets/images/NFTs/nft_3.png',
+    'assets/images/NFTs/nft_4.png',
+    'assets/images/NFTs/nft_5.png',
+    'assets/images/NFTs/nft_6.png',
+    'assets/images/NFTs/nft_7.png',
+    'assets/images/NFTs/nft_8.png',
+    'assets/images/NFTs/nft_9.png',
+    'assets/images/NFTs/nft_10.png',
+    'assets/images/NFTs/nft_11.png',
+    'assets/images/NFTs/nft_12.png',
+    'assets/images/NFTs/nft_13.png',
+  ];
+
+  return Container(
+    clipBehavior: Clip.hardEdge,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(10)
+    ),
+    child: Image.asset(nfts[Random().nextInt(13)], fit: BoxFit.cover)
+  );
 }

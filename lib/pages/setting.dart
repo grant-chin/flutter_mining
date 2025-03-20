@@ -21,7 +21,7 @@ class SettingView extends StatelessWidget {
             ))
           ),
           Positioned(
-            top: kToolbarHeight + 56,
+            top: kToolbarHeight,
             child: Column(
               children: [
                 SizedBox(height: 16),

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_mining/common/Global.dart';
 import 'package:shake_animation_widget/shake_animation_widget.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MinePage extends StatefulWidget {
   const MinePage({super.key});
@@ -12,26 +12,15 @@ class MinePage extends StatefulWidget {
 }
 
 class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin {
-  final Future<SharedPreferencesWithCache> _prefs =
-      SharedPreferencesWithCache.create(
-        cacheOptions: const SharedPreferencesWithCacheOptions(allowList: <String>{'counter'})
-      );
-  int _counter = 0;
-  final int _level = 1; // 等级
-  final int _exp = 0; // 经验值
+  int get goldYesterday => Global.goldYesterday;
+  int get goldToday => Global.goldToday;
+  int get goldTotal => Global.goldTotal;
+  int get goldDaily => Global.goldDaily;
+  int get _level => Global.level; // 等级
+  int get _exp => Global.exp; // 经验值
   bool isClick = false; // 用于按钮按下缩放效果
   int strokeIndex = -1; // 当前显示圆环进度条下标
   bool _mining = false; // 是否正在mining状态
-
-  // @override
-  // initState() {
-  //   super.initState();
-    
-  //   setState(() async {
-  //     final SharedPreferencesWithCache prefs = await _prefs;
-  //     _counter = prefs.getInt('counter') ?? 0;
-  //   });
-  // }
 
   // 显示Level Tips的方法
   _showLevelTips() {
@@ -252,7 +241,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                             Image.asset('assets/icons/icon_coin.png', width: 20, height: 20),
                             Container(
                               padding: EdgeInsets.only(left: 2),
-                              child: Text('--', style: TextStyle(color: Colors.white, fontSize: 17),),
+                              child: Text('$goldYesterday', style: TextStyle(color: Colors.white, fontSize: 17),),
                             )
                           ],
                         )
@@ -281,7 +270,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                             Image.asset('assets/icons/icon_coin.png', width: 20, height: 20),
                             Container(
                               padding: EdgeInsets.only(left: 2),
-                              child: Text('--', style: TextStyle(color: Colors.white, fontSize: 17),),
+                              child: Text('$goldToday', style: TextStyle(color: Colors.white, fontSize: 17),),
                             )
                           ],
                         )
@@ -310,7 +299,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                             Image.asset('assets/icons/icon_coin.png', width: 20, height: 20),
                             Container(
                               padding: EdgeInsets.only(left: 2),
-                              child: Text('--', style: TextStyle(color: Colors.white, fontSize: 17),),
+                              child: Text('$goldTotal', style: TextStyle(color: Colors.white, fontSize: 17),),
                             )
                           ],
                         )
@@ -494,7 +483,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                             Image.asset('assets/icons/icon_coin.png', width: 20, height: 20),
                             Container(
                               padding: EdgeInsets.only(left: 2),
-                              child: Text('$_counter', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),),
+                              child: Text('$goldDaily', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),),
                             )
                           ],
                         )
@@ -698,36 +687,35 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
           });
         },
         onPointerUp: (event) async {
-          final SharedPreferencesWithCache prefs = await _prefs;
-          final int counter = (prefs.getInt('counter') ?? 0) + 5 * _level;
-          setState(() async {
+          int threshold = 5 * _level;
+          Global.increaseGold(threshold);
+          setState(() {
             isClick = false;
-            // //判断抖动动画是否正在执行
-            // if (_shakeAnimationController.animationRunging) {
-            //   //停止抖动动画
-            //   _shakeAnimationController.stop();
-            // } else {
-            //   //开启抖动动画
-            //   //参数shakeCount 用来配置抖动次数
-            //   //通过 controller start 方法默认为 1
-            //   _shakeAnimationController.start(shakeCount: 1);
-            // }
-            _shakeAnimationController.start();
-            await prefs.setInt('counter', counter);
-            _counter = counter;
-
-            Overlay.of(context).insert(OverlayEntry(builder: (context) => Positioned(
-              top: 426,
-              left: 260,
-              child: FadeOutUp(child: Text('+5', style: TextStyle(
-                color: Color.fromRGBO(36, 245, 219, 1),
-                fontSize: 24,
-                fontWeight: FontWeight.w900,
-                fontFamily: 'Lexend',
-                decoration: TextDecoration.none
-              )))
-            )));
           });
+
+          // //判断抖动动画是否正在执行
+          // if (_shakeAnimationController.animationRunging) {
+          //   //停止抖动动画
+          //   _shakeAnimationController.stop();
+          // } else {
+          //   //开启抖动动画
+          //   //参数shakeCount 用来配置抖动次数
+          //   //通过 controller start 方法默认为 1
+          //   _shakeAnimationController.start(shakeCount: 1);
+          // }
+          _shakeAnimationController.start();
+
+          Overlay.of(context).insert(OverlayEntry(builder: (context) => Positioned(
+            top: 426,
+            left: 260,
+            child: FadeOutUp(child: Text('+$threshold', style: TextStyle(
+              color: Color.fromRGBO(36, 245, 219, 1),
+              fontSize: 24,
+              fontWeight: FontWeight.w900,
+              fontFamily: 'Lexend',
+              decoration: TextDecoration.none
+            )))
+          )));
         },
       )
     );

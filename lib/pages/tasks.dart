@@ -1,5 +1,7 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
-// import 'package:intl/date_symbol_local.dart';
+import 'package:flutter_mining/common/Global.dart';
 
 class TasksPage extends StatefulWidget {
   const TasksPage({super.key});
@@ -10,14 +12,124 @@ class TasksPage extends StatefulWidget {
 
 class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMixin {
   int weekday = DateTime.now().weekday;
-  List claimedArr = [];
-  bool isClaimed = false; // 今日是否已签到
+  List<String> get claimedArr => Global.weekSignedTimes;
+  bool get isSignedToday => Global.isSignedToday; // 今日是否已签到
+  bool get isRate => Global.isRate; // 是否评价
+  bool get isShared => Global.isShared; // 是否分享
+  int get mintTimes => Global.mintTimes; // 已铸造次数
+  bool get isClaimActivePioneer => Global.isClaimActivePioneer; // 是否已领取铸造先锋奖励
+  bool get isClaimGoalAchiever => Global.isClaimGoalAchiever; // 是否已领取NFT铸造成功成就
+  bool get isClaimPowerExpert => Global.isClaimPowerExpert; // 是否已领取铸造专家成就
+  bool get isClaimGoalMaster => Global.isClaimGoalMaster; // 是否已领取铸造专家成就
+  bool get isClaimVitalityChampion => Global.isClaimVitalityChampion; // 是否已领取铸造冠军成就
+  bool get isClaimPeakAchiever => Global.isClaimPeakAchiever; // 是否已领取巅峰成就
 
-  _onTodayClaim() {
-    setState(() {
-      isClaimed = !isClaimed;
-      claimedArr = [...claimedArr, weekday];
-    });
+  _showDialog(type, subtitle, exp) {
+    final imgs = {
+      1: 'assets/images/tasks/dialog_title_rating_complete.png', // 评价
+      2: 'assets/images/tasks/dialog_title_sharing_is_winning.png', // 分享
+      3: 'assets/images/tasks/dialog_title_treasure_collected.png', // 铸造成就
+      4: 'assets/images/tasks/dialog_title_NFT_minted.png', // NFT
+      5: 'assets/images/tasks/dialog_title_milestone_achieved.png', // 等级成就
+    };
+
+    showDialog(
+      context: context,
+      useSafeArea: false,
+      // 构建 Dialog 的视图
+      builder: (_) => Stack(
+        alignment: Alignment.center,
+        children: [
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: 2,
+                sigmaY: 2,
+              ),
+              child: Container(
+                color: Colors.black12,
+              ),
+            ),
+          ),
+          Positioned(
+            top: 210,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Stack(
+                  children: [
+                    Image.asset('assets/images/tasks/dialog_task.png', width: MediaQuery.of(context).size.width),
+                    Positioned(
+                      top: 26,
+                      left: 26,
+                      child: Image.asset(imgs[type]!, height: 40)
+                    ),
+                  ],
+                ),
+                Positioned(bottom: 26, child: SizedBox(
+                  width: MediaQuery.of(context).size.width - 160,
+                  height: MediaQuery.of(context).size.width - 240,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(subtitle, style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8)),),
+                      Container(
+                        width: 160,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: Color.fromRGBO(35, 36, 41, 1),
+                          borderRadius: BorderRadius.circular(16)
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(width: 10),
+                            Text('+$exp', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                            Image.asset('assets/icons/icon_xp.png', width: 24),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        height: 54,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            overlayColor: Colors.white,
+                            foregroundColor: Colors.white,
+                            backgroundColor: Color.fromRGBO(112, 21, 239, 1),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          ),
+                          onPressed: () {
+                            Global.increaseExp(exp);
+                            Navigator.pop(context);
+                          },
+                          child: Text('Claim it', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                        ),
+                      )
+                    ],
+                  ),
+                ))
+              ],
+            )
+          ),
+          Positioned(
+            top: MediaQuery.of(context).size.width + 110,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                overlayColor: Colors.transparent,
+                backgroundColor: Colors.transparent,
+                padding: EdgeInsets.all(0),
+              ),
+              onPressed: () {
+                Global.increaseExp(exp);
+                Navigator.pop(context);
+              },
+              child: Image.asset('assets/icons/icon_close.png', width: 40)
+            )
+          )
+        ],
+      )
+    );
   }
 
   @override
@@ -48,32 +160,32 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                     Image.asset('assets/images/tasks/turn_table.png', width: 344),
                     // day 1
                     // Positioned(top: 13, left: 160, child: Image.asset('assets/images/tasks/day_1_default.png', scale: 2.95)),
-                    weekday == 1 && !claimedArr.contains(1) ? Positioned(top: 13, left: 160, child: Image.asset('assets/images/tasks/day_1_primary.png', scale: 2.95)) : Container(),
-                    claimedArr.contains(1) ? Positioned(top: 13, left: 160, child: Image.asset('assets/images/tasks/day_1_plain.png', scale: 2.95)) : Container(),
+                    weekday == 1 && !claimedArr.contains('1') ? Positioned(top: 13, left: MediaQuery.of(context).size.width / 2 - 60, child: Image.asset('assets/images/tasks/day_1_primary.png', scale: 2.95)) : Container(),
+                    claimedArr.contains('1') ? Positioned(top: 13, left: MediaQuery.of(context).size.width / 2 - 60, child: Image.asset('assets/images/tasks/day_1_plain.png', scale: 2.95)) : Container(),
                     // day 2
-                    weekday < 2 ? Positioned(top: 34, left: 262, child: Image.asset('assets/images/tasks/day_2_default.png', scale: 2.95)) : Container(),
-                    weekday == 2 && !claimedArr.contains(2) ? Positioned(top: 34, left: 262, child: Image.asset('assets/images/tasks/day_2_primary.png', scale: 2.95)) : Container(),
-                    claimedArr.contains(2) ? Positioned(top: 34, left: 262, child: Image.asset('assets/images/tasks/day_2_plain.png', scale: 2.95)) : Container(),
+                    weekday < 2 ? Positioned(top: 33, left: MediaQuery.of(context).size.width / 2 + 42, child: Image.asset('assets/images/tasks/day_2_default.png', scale: 2.95)) : Container(),
+                    weekday == 2 && !claimedArr.contains('2') ? Positioned(top: 34, left: MediaQuery.of(context).size.width / 2 + 42, child: Image.asset('assets/images/tasks/day_2_primary.png', scale: 2.95)) : Container(),
+                    claimedArr.contains('2') ? Positioned(top: 34, left: MediaQuery.of(context).size.width / 2 + 42, child: Image.asset('assets/images/tasks/day_2_plain.png', scale: 2.95)) : Container(),
                     // day 3
-                    weekday < 3 ? Positioned(top: 144, left: 288, child: Image.asset('assets/images/tasks/day_3_default.png', scale: 2.95)) : Container(),
-                    weekday == 3 && !claimedArr.contains(3) ? Positioned(top: 144, left: 288, child: Image.asset('assets/images/tasks/day_3_primary.png', scale: 2.95)) : Container(),
-                    claimedArr.contains(3) ? Positioned(top: 144, left: 288, child: Image.asset('assets/images/tasks/day_3_plain.png', scale: 2.95)) : Container(),
+                    weekday < 3 ? Positioned(top: 144, left: MediaQuery.of(context).size.width / 2 + 68, child: Image.asset('assets/images/tasks/day_3_default.png', scale: 2.95)) : Container(),
+                    weekday == 3 && !claimedArr.contains('3') ? Positioned(top: 144, left: MediaQuery.of(context).size.width / 2 + 68, child: Image.asset('assets/images/tasks/day_3_primary.png', scale: 2.95)) : Container(),
+                    claimedArr.contains('3') ? Positioned(top: 144, left: MediaQuery.of(context).size.width / 2 + 68, child: Image.asset('assets/images/tasks/day_3_plain.png', scale: 2.95)) : Container(),
                     // day 4
-                    weekday < 4 ? Positioned(top: 236, left: 211, child: Image.asset('assets/images/tasks/day_4_default.png', scale: 2.95)) : Container(),
-                    weekday == 4 && !claimedArr.contains(4) ? Positioned(top: 236, left: 211, child: Image.asset('assets/images/tasks/day_4_primary.png', scale: 2.95)) : Container(),
-                    claimedArr.contains(4) ? Positioned(top: 236, left: 211, child: Image.asset('assets/images/tasks/day_4_plain.png', scale: 2.95)) : Container(),
+                    weekday < 4 ? Positioned(top: 236, left: MediaQuery.of(context).size.width / 2 - 9, child: Image.asset('assets/images/tasks/day_4_default.png', scale: 2.95)) : Container(),
+                    weekday == 4 && !claimedArr.contains('4') ? Positioned(top: 236, left: MediaQuery.of(context).size.width / 2 - 9, child: Image.asset('assets/images/tasks/day_4_primary.png', scale: 2.95)) : Container(),
+                    claimedArr.contains('4') ? Positioned(top: 236, left: MediaQuery.of(context).size.width / 2 - 9, child: Image.asset('assets/images/tasks/day_4_plain.png', scale: 2.95)) : Container(),
                     // day 5
-                    weekday < 5 ? Positioned(top: 226, left: 106, child: Image.asset('assets/images/tasks/day_5_default.png', scale: 2.95)) : Container(),
-                    weekday == 5 && !claimedArr.contains(5) ? Positioned(top: 226, left: 106, child: Image.asset('assets/images/tasks/day_5_primary.png', scale: 2.95)) : Container(),
-                    claimedArr.contains(5) ? Positioned(top: 226, left: 106, child: Image.asset('assets/images/tasks/day_5_plain.png', scale: 2.95)) : Container(),
+                    weekday < 5 ? Positioned(top: 226, left: MediaQuery.of(context).size.width / 2 - 114, child: Image.asset('assets/images/tasks/day_5_default.png', scale: 2.95)) : Container(),
+                    weekday == 5 && !claimedArr.contains('5') ? Positioned(top: 226, left: MediaQuery.of(context).size.width / 2 - 114, child: Image.asset('assets/images/tasks/day_5_primary.png', scale: 2.95)) : Container(),
+                    claimedArr.contains('5') ? Positioned(top: 226, left: MediaQuery.of(context).size.width / 2 - 114, child: Image.asset('assets/images/tasks/day_5_plain.png', scale: 2.95)) : Container(),
                     // day 6
-                    weekday < 6 ? Positioned(top: 136, left: 67, child: Image.asset('assets/images/tasks/day_6_default.png', scale: 2.95)) : Container(),
-                    weekday == 6 && !claimedArr.contains(6) ? Positioned(top: 136, left: 67, child: Image.asset('assets/images/tasks/day_6_primary.png', scale: 2.95)) : Container(),
-                    claimedArr.contains(6) ? Positioned(top: 136, left: 67, child: Image.asset('assets/images/tasks/day_6_plain.png', scale: 2.95)) : Container(),
+                    weekday < 6 ? Positioned(top: 136, left: MediaQuery.of(context).size.width / 2 - 153, child: Image.asset('assets/images/tasks/day_6_default.png', scale: 2.95)) : Container(),
+                    weekday == 6 && !claimedArr.contains('6') ? Positioned(top: 136, left: MediaQuery.of(context).size.width / 2 - 153, child: Image.asset('assets/images/tasks/day_6_primary.png', scale: 2.95)) : Container(),
+                    claimedArr.contains('6') ? Positioned(top: 136, left: MediaQuery.of(context).size.width / 2 - 153, child: Image.asset('assets/images/tasks/day_6_plain.png', scale: 2.95)) : Container(),
                     // day 7
-                    weekday < 7 ? Positioned(top: 42, left: 65, child: Image.asset('assets/images/tasks/day_7_default.png', scale: 2.95)) : Container(),
-                    weekday == 7 && !claimedArr.contains(7) ? Positioned(top: 42, left: 65, child: Image.asset('assets/images/tasks/day_7_primary.png', scale: 2.95)) : Container(),
-                    claimedArr.contains(7) ? Positioned(top: 42, left: 65, child: Image.asset('assets/images/tasks/day_7_plain.png', scale: 2.95)) : Container(),
+                    weekday < 7 ? Positioned(top: 42, left: MediaQuery.of(context).size.width / 2 - 155, child: Image.asset('assets/images/tasks/day_7_default.png', scale: 2.95)) : Container(),
+                    weekday == 7 && !claimedArr.contains('7') ? Positioned(top: 42, left: MediaQuery.of(context).size.width / 2 - 155, child: Image.asset('assets/images/tasks/day_7_primary.png', scale: 2.95)) : Container(),
+                    claimedArr.contains('7') ? Positioned(top: 42, left: MediaQuery.of(context).size.width / 2 - 155, child: Image.asset('assets/images/tasks/day_7_plain.png', scale: 2.95)) : Container(),
 
                     Positioned(
                       child: Column(
@@ -103,8 +215,8 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                                 borderRadius: BorderRadius.circular(20)
                               ),
                             ),
-                            onPressed: isClaimed ? null : _onTodayClaim,
-                            child: Text(isClaimed ? 'Claimed' : 'Claim', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            onPressed: isSignedToday ? null : Global.onSignToday,
+                            child: Text(isSignedToday ? 'Claimed' : 'Claim', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                           )
                         ],
                       )
@@ -116,314 +228,78 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                   child: Column(
                     children: <Widget>[
                       Image.asset('assets/images/tasks/task_list.png'),
-                      SizedBox(height: 10),
-                      Container(
-                        height: 64,
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Color.fromRGBO(22, 22, 26, 1),
-                          borderRadius: BorderRadius.circular(16)
-                        ),
-                        child: Row(
-                          children: [
-                            Image.asset('assets/images/tasks/icon_thumb.png', width: 40, height: 40),
-                            SizedBox(width: 8),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Rate us', style: TextStyle(color: Colors.white),),
-                                Row(
-                                  children: [
-                                    Text('Rating successful +50', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 12)),
-                                    Image.asset('assets/icons/icon_xp.png', width: 16, height: 16,)
-                                  ],
-                                )
-                              ],
-                            ),
-                            Spacer(),
-                            SizedBox(
-                              width: 94,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color.fromRGBO(112, 21, 239, 1),
-                                  overlayColor: Colors.white,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                                ),
-                                child: Text('Rate', style: TextStyle(color: Colors.white, fontSize: 16)),
-                                onPressed: () {}
-                              ),
-                            )
-                          ],
-                        ),
+                      isRate ? Container() : taskItem(
+                        'assets/images/tasks/icon_thumb.png',
+                        'Rate us',
+                        'Rating successful +50',
+                        'Share',
+                        () {
+                          _showDialog(1, 'Thanks for Your Feedback!', 50);
+                        }
                       ),
-                      SizedBox(height: 16),
-                      Container(
-                        height: 64,
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Color.fromRGBO(22, 22, 26, 1),
-                          borderRadius: BorderRadius.circular(16)
-                        ),
-                        child: Row(
-                          children: [
-                            Image.asset('assets/images/tasks/icon_clap.png', width: 40, height: 40),
-                            SizedBox(width: 8),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Invite friends', style: TextStyle(color: Colors.white),),
-                                Row(
-                                  children: [
-                                    Text('Successfully shared once +25', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 12)),
-                                    Image.asset('assets/icons/icon_xp.png', width: 16, height: 16,)
-                                  ],
-                                )
-                              ],
-                            ),
-                            Spacer(),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color.fromRGBO(112, 21, 239, 1),
-                                overlayColor: Colors.white,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                              ),
-                              child: Text('Share', style: TextStyle(color: Colors.white, fontSize: 16)),
-                              onPressed: () {}
-                            )
-                          ],
-                        ),
+                      isShared ? Container() : taskItem(
+                        'assets/images/tasks/icon_clap.png',
+                        'Invite friends',
+                        'Successfully shared once +25',
+                        'Share',
+                        () {
+                          _showDialog(2, 'Speread the Joy!', 25);
+                        }
                       ),
-                      SizedBox(height: 16),
-                      Container(
-                        height: 64,
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Color.fromRGBO(22, 22, 26, 1),
-                          borderRadius: BorderRadius.circular(16)
-                        ),
-                        child: Row(
-                          children: [
-                            Image.asset('assets/images/tasks/icon_potholing.png', width: 40, height: 40),
-                            SizedBox(width: 8),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Active pioneer', style: TextStyle(color: Colors.white),),
-                                Row(
-                                  children: [
-                                    Text('Claim mining rewards 3 times +200', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 12)),
-                                    Image.asset('assets/icons/icon_xp.png', width: 16, height: 16,)
-                                  ],
-                                )
-                              ],
-                            ),
-                            Spacer(),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color.fromRGBO(112, 21, 239, 1),
-                                overlayColor: Colors.white,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                              ),
-                              child: Text('Claim', style: TextStyle(color: Colors.white, fontSize: 16)),
-                              onPressed: () {}
-                            )
-                          ],
-                        ),
+                      isClaimActivePioneer ? Container() : taskItem(
+                        'assets/images/tasks/icon_potholing.png',
+                        'Active pioneer',
+                        'Mining 3 times +200',
+                        'Claim',
+                        () {
+                          _showDialog(3, 'Mining Rewards Unlocked!', 200);
+                        }
                       ),
-                      SizedBox(height: 16),
-                      Container(
-                        height: 64,
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Color.fromRGBO(22, 22, 26, 1),
-                          borderRadius: BorderRadius.circular(16)
-                        ),
-                        child: Row(
-                          children: [
-                            Image.asset('assets/images/tasks/icon_mystery.png', width: 40, height: 40),
-                            SizedBox(width: 8),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Goal achiever', style: TextStyle(color: Colors.white),),
-                                Row(
-                                  children: [
-                                    Text('Complete 1 NFT minting +500', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 12)),
-                                    Image.asset('assets/icons/icon_xp.png', width: 16, height: 16,)
-                                  ],
-                                )
-                              ],
-                            ),
-                            Spacer(),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color.fromRGBO(112, 21, 239, 1),
-                                overlayColor: Colors.white,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                              ),
-                              child: Text('Claim', style: TextStyle(color: Colors.white, fontSize: 16)),
-                              onPressed: () {}
-                            )
-                          ],
-                        ),
+                      isClaimGoalAchiever ? Container() : taskItem(
+                        'assets/images/tasks/icon_mystery.png',
+                        'Goal achiever',
+                        'Complete 1 NFT minting +500',
+                        'Claim',
+                        () {
+                          _showDialog(2, 'Mint Complete! Welcome to the Future!', 500);
+                        }
                       ),
-                      SizedBox(height: 16),
-                      Container(
-                        height: 64,
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Color.fromRGBO(22, 22, 26, 1),
-                          borderRadius: BorderRadius.circular(16)
-                        ),
-                        child: Row(
-                          children: [
-                            Image.asset('assets/images/tasks/icon_potholing.png', width: 40, height: 40),
-                            SizedBox(width: 8),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Power expert', style: TextStyle(color: Colors.white),),
-                                Row(
-                                  children: [
-                                    Text('Claim mining rewards 5 times +600', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 12)),
-                                    Image.asset('assets/icons/icon_xp.png', width: 16, height: 16,)
-                                  ],
-                                )
-                              ],
-                            ),
-                            Spacer(),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color.fromRGBO(112, 21, 239, 1),
-                                overlayColor: Colors.white,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                              ),
-                              child: Text('Claim', style: TextStyle(color: Colors.white, fontSize: 16)),
-                              onPressed: () {}
-                            )
-                          ],
-                        ),
+                      isClaimPowerExpert ? Container() : taskItem(
+                        'assets/images/tasks/icon_potholing.png',
+                        'Power expert',
+                        'Mining 5 times +600',
+                        'Claim',
+                        () {
+                          _showDialog(2, 'Mining Rewards Unlocked!', 600);
+                        }
                       ),
-                      SizedBox(height: 16),
-                      Container(
-                        height: 64,
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Color.fromRGBO(22, 22, 26, 1),
-                          borderRadius: BorderRadius.circular(16)
-                        ),
-                        child: Row(
-                          children: [
-                            Image.asset('assets/images/tasks/icon_badge_10.png', width: 40, height: 40),
-                            SizedBox(width: 8),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Goal master', style: TextStyle(color: Colors.white),),
-                                Row(
-                                  children: [
-                                    Text('Reach Level 10 +1000', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 12)),
-                                    Image.asset('assets/icons/icon_xp.png', width: 16, height: 16,)
-                                  ],
-                                )
-                              ],
-                            ),
-                            Spacer(),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color.fromRGBO(112, 21, 239, 1),
-                                overlayColor: Colors.white,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                              ),
-                              child: Text('Claim', style: TextStyle(color: Colors.white, fontSize: 16)),
-                              onPressed: () {}
-                            )
-                          ],
-                        ),
+                      isClaimGoalMaster ? Container() : taskItem(
+                        'assets/images/tasks/icon_badge_10.png',
+                        'Goal master',
+                        'Reach Level 10 +1000',
+                        'Claim',
+                        () {
+                          _showDialog(2, 'Level 10 Unlocked! You’re on Fire!', 1000);
+                        }
                       ),
-                      SizedBox(height: 16),
-                      Container(
-                        height: 64,
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Color.fromRGBO(22, 22, 26, 1),
-                          borderRadius: BorderRadius.circular(16)
-                        ),
-                        child: Row(
-                          children: [
-                            Image.asset('assets/images/tasks/icon_potholing.png', width: 40, height: 40),
-                            SizedBox(width: 8),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Vitality champion', style: TextStyle(color: Colors.white)),
-                                Row(
-                                  children: [
-                                    Text('Claim mining rewards 20 times +2000', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 12)),
-                                    Image.asset('assets/icons/icon_xp.png', width: 16, height: 16,)
-                                  ],
-                                )
-                              ],
-                            ),
-                            Spacer(),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color.fromRGBO(112, 21, 239, 1),
-                                overlayColor: Colors.white,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                              ),
-                              child: Text('Claim', style: TextStyle(color: Colors.white, fontSize: 16)),
-                              onPressed: () {}
-                            )
-                          ],
-                        ),
+                      isClaimVitalityChampion ? Container() : taskItem(
+                        'assets/images/tasks/icon_potholing.png',
+                        'Vitality champion',
+                        'Mining 20 times +2000',
+                        'Claim',
+                        () {
+                          _showDialog(2, 'Mining Rewards Unlocked!', 2000);
+                        }
                       ),
-                      SizedBox(height: 16),
-                      Container(
-                        height: 64,
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Color.fromRGBO(22, 22, 26, 1),
-                          borderRadius: BorderRadius.circular(16)
-                        ),
-                        child: Row(
-                          children: [
-                            Image.asset('assets/images/tasks/icon_badge_50.png', width: 40, height: 40),
-                            SizedBox(width: 8),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Peak achiever', style: TextStyle(color: Colors.white),),
-                                Row(
-                                  children: [
-                                    Text('Reach Level 50 +5000', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 12)),
-                                    Image.asset('assets/icons/icon_xp.png', width: 16, height: 16,)
-                                  ],
-                                )
-                              ],
-                            ),
-                            Spacer(),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color.fromRGBO(112, 21, 239, 1),
-                                overlayColor: Colors.white,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                              ),
-                              child: Text('Claim', style: TextStyle(color: Colors.white, fontSize: 16)),
-                              onPressed: () {}
-                            )
-                          ],
-                        ),
+                      isClaimPeakAchiever ? Container() : taskItem(
+                        'assets/images/tasks/icon_badge_50.png',
+                        'Peak achiever',
+                        'Reach Level 50 +5000',
+                        'Claim',
+                        () {
+                          _showDialog(2, 'Level 50 Unlocked! You’re on Fire!', 5000);
+                        }
                       ),
-                      SizedBox(height: 6),
                     ],
                   ),
                 )
@@ -434,4 +310,46 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
       ])
     );
   }
+}
+
+Widget taskItem(img, title, desc, btnText, func) {
+  return Container(
+    height: 64,
+    padding: EdgeInsets.all(10),
+    margin: EdgeInsets.only(top: 10, bottom: 6),
+    decoration: BoxDecoration(
+      color: Color.fromRGBO(22, 22, 26, 1),
+      borderRadius: BorderRadius.circular(16)
+    ),
+    child: Row(
+      children: [
+        Image.asset(img, width: 40, height: 40),
+        SizedBox(width: 8),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: TextStyle(color: Colors.white),),
+            Row(
+              children: [
+                Text(desc, style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 12)),
+                Image.asset('assets/icons/icon_xp.png', width: 16, height: 16,)
+              ],
+            )
+          ],
+        ),
+        Spacer(),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color.fromRGBO(112, 21, 239, 1),
+            overlayColor: Colors.white,
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          ),
+          onPressed: func,
+          child: Text(btnText, style: TextStyle(color: Colors.white, fontSize: 16)),
+        )
+      ],
+    ),
+  );
 }

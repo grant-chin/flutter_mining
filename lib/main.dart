@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'pages/home.dart';
 import 'pages/profile.dart';
 import 'pages/setting.dart';
+import 'common/Global.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => Global.init().then((e) => runApp(MyApp()));
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

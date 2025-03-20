@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-class ProfileView extends StatelessWidget {
+List<String> images = [
+  'assets/images/NFTs/nft_1.png',
+  'assets/images/NFTs/nft_2.png',
+];
+
+class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
 
+  @override
+  State<ProfileView> createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStateMixin {
 	@override
 	Widget build(BuildContext context) {
 		return Scaffold(
@@ -30,8 +41,7 @@ class ProfileView extends StatelessWidget {
             ],
           ),
           SliverToBoxAdapter(
-            child: Container(
-              // padding: const EdgeInsets.fromLTRB(0, kToolbarHeight + 12, 0, 0),
+            child: SizedBox(
               child: Column(
                 children: [
                   // Container(
@@ -226,140 +236,142 @@ class ProfileView extends StatelessWidget {
                   ),
                   Container(
                     alignment: Alignment.centerLeft,
-                    padding: EdgeInsets.all(16),
+                    padding: EdgeInsets.fromLTRB(16, 8, 16, 10),
                     child: Text('NFTs', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),),
                   ),
-                  // Container(
-                  //   child: Column(
-                  //     children: [
-                  //       SizedBox(height: 120),
-                  //       Text("You don't have any NFTs yet. Tap to mint.", style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8)),),
-                  //       SizedBox(height: 30),
-                  //       Container(
-                  //         width: 260,
-                  //         height: 54,
-                  //         child: ElevatedButton(
-                  //           style: ElevatedButton.styleFrom(
-                  //             overlayColor: Colors.white,
-                  //             backgroundColor: Color.fromRGBO(112, 21, 239, 1),
-                  //             disabledBackgroundColor: Color.fromRGBO(35, 36, 41, 1),
-                  //             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  //           ),
-                  //           onPressed: () {
-                  //             Navigator.of(context).pop();
-                  //           },
-                  //           child: Text('Mint', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                  //         ),
-                  //       )
-                  //     ],
-                  //   ),
-                  // )
-                ],
-              ),
-            ),
-          ),
-          SliverGrid(
-            delegate: SliverChildBuilderDelegate(
-              (BuildContext context, int index) {
-                return Container(
-                  margin: EdgeInsets.only(left: index % 2 == 0 ? 16 : 0, right: index % 2 == 0 ? 0 : 16, bottom: 16),
-                  child: Container(
-                    padding: EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: Color.fromRGBO(22, 22, 26, 1),
-                      borderRadius: BorderRadius.circular(16)
-                    ),
+                  images.isEmpty ? SizedBox(
                     child: Column(
                       children: [
-                        Container(
-                          width: 168,
-                          height: 168,
-                          padding: EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: Color.fromRGBO(53, 54, 60, 1),
-                            borderRadius: BorderRadius.circular(16)
+                        SizedBox(height: 120),
+                        Text("You don't have any NFTs yet. Tap to mint.", style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8)),),
+                        SizedBox(height: 30),
+                        SizedBox(
+                          width: 260,
+                          height: 54,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              overlayColor: Colors.white,
+                              backgroundColor: Color.fromRGBO(112, 21, 239, 1),
+                              disabledBackgroundColor: Color.fromRGBO(35, 36, 41, 1),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Mint', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                           ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.asset('assets/images/avator/lion.jpeg', fit: BoxFit.cover),
-                          )
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(top: 16),
-                          child: Row(
-                            children: [
-                              Container(
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [Color.fromRGBO(112, 21, 239, 1), Color.fromRGBO(92, 81, 255, 1)],
-                                  ),
-                                ),
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    overlayColor: Colors.white,
-                                    shadowColor: Colors.transparent,
-                                    padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
-                                    elevation: 0, // 阴影
-                                    backgroundColor: Colors.transparent,
-                                    shape: BeveledRectangleBorder(
-                                      borderRadius: BorderRadius.circular(4)
-                                    )
-                                  ),
-                                  child: Text('Set as Avator', style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold
-                                  )),
-                                  onPressed: () {}
-                                ),
-                              ),
-                              Spacer(),
-                              Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  color: Color.fromRGBO(35, 36, 41, 1),
-                                  border: Border.all(color: Color.fromRGBO(53, 54, 60, 1), width: 1)
-                                ),
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    overlayColor: Colors.white,
-                                    shadowColor: Colors.transparent,
-                                    padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                    elevation: 0, // 阴影
-                                    backgroundColor: Colors.transparent,
-                                    shape: BeveledRectangleBorder(
-                                      borderRadius: BorderRadius.circular(4)
-                                    )
-                                  ),
-                                  child: Image.asset('assets/icons/icon_download.png', width: 20,),
-                                  onPressed: () {}
-                                ),
-                              ),
-                            ],
-                          )
                         ),
                       ],
                     ),
-                  ),
-                );
-              },
-              childCount: 6,
-            ),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              // mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 0.788,
+                  ) : nftListWidget(context)
+                ],
+              ),
             ),
           ),
         ],
 			),
 		);
 	}
+}
+
+Widget nftListWidget(context) {
+  return SizedBox(
+    height: MediaQuery.of(context).size.height - 455,
+    child: MasonryGridView.count(
+      padding: EdgeInsets.fromLTRB(16, 8, 16, kBottomNavigationBarHeight),
+      crossAxisCount: 2, //几列
+      mainAxisSpacing: 16, // 间距
+      crossAxisSpacing: 16, // 纵向间距？
+      itemCount: images.length, // 元素个数
+      itemBuilder: (context, index) {
+        return SizedBox(
+          child: Container(
+            padding: EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: Color.fromRGBO(22, 22, 26, 1),
+              borderRadius: BorderRadius.circular(16)
+            ),
+            child: Column(
+              children: [
+                Container(
+                  width: 168,
+                  height: 168,
+                  padding: EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(53, 54, 60, 1),
+                    borderRadius: BorderRadius.circular(16)
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.asset(images[index], fit: BoxFit.cover),
+                  )
+                ),
+                SizedBox(height: 16),
+                SizedBox(
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [Color.fromRGBO(112, 21, 239, 1), Color.fromRGBO(92, 81, 255, 1)],
+                          ),
+                        ),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            overlayColor: Colors.white,
+                            shadowColor: Colors.transparent,
+                            padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                            elevation: 0, // 阴影
+                            backgroundColor: Colors.transparent,
+                            shape: BeveledRectangleBorder(
+                              borderRadius: BorderRadius.circular(4)
+                            )
+                          ),
+                          child: Text('Set as Avator', style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          )),
+                          onPressed: () {}
+                        ),
+                      ),
+                      Spacer(),
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: Color.fromRGBO(35, 36, 41, 1),
+                          border: Border.all(color: Color.fromRGBO(53, 54, 60, 1), width: 1)
+                        ),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            overlayColor: Colors.white,
+                            shadowColor: Colors.transparent,
+                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                            elevation: 0, // 阴影
+                            backgroundColor: Colors.transparent,
+                            shape: BeveledRectangleBorder(
+                              borderRadius: BorderRadius.circular(4)
+                            )
+                          ),
+                          child: Image.asset('assets/icons/icon_download.png', width: 20,),
+                          onPressed: () {}
+                        ),
+                      ),
+                    ],
+                  )
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ),
+  );
 }
