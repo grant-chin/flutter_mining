@@ -29,8 +29,8 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
           case 'NFTs': minerCost = 10000; break;
         }
       } else {
-        miner = '';
-        minerCost = 0;
+        // miner = '';
+        // minerCost = 0;
       }
     });
   }

@@ -4,6 +4,21 @@ import 'package:flutter_mining/common/Global.dart';
 import 'package:shake_animation_widget/shake_animation_widget.dart';
 import 'package:animate_do/animate_do.dart';
 
+int get goldYesterday => Global.goldYesterday;
+int get goldToday => Global.goldToday;
+int get goldTotal => Global.goldTotal;
+int get goldDaily => Global.goldDaily;
+int get _level => Global.level; // 等级
+int get _exp => Global.exp; // 经验值
+bool isClick = false; // 用于按钮按下缩放效果
+int strokeIndex = -1; // 当前显示圆环进度条下标
+bool get _mining => Global.isMining; // 是否正在mining状态
+int get remainTime => Global.remainMineTime; // 剩余挖矿时间-默认8小时/28800秒
+String remainHours = '00'; // 剩余挖矿时间-小时
+String remainMinutes = '00'; // 剩余挖矿时间-分钟
+String remainSeconds = '00'; // 剩余挖矿时间-秒
+double miningCoins = 0; // 自动挖矿金币数量
+
 class MinePage extends StatefulWidget {
   const MinePage({super.key});
 
@@ -12,15 +27,11 @@ class MinePage extends StatefulWidget {
 }
 
 class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin {
-  int get goldYesterday => Global.goldYesterday;
-  int get goldToday => Global.goldToday;
-  int get goldTotal => Global.goldTotal;
-  int get goldDaily => Global.goldDaily;
-  int get _level => Global.level; // 等级
-  int get _exp => Global.exp; // 经验值
-  bool isClick = false; // 用于按钮按下缩放效果
-  int strokeIndex = -1; // 当前显示圆环进度条下标
-  bool _mining = false; // 是否正在mining状态
+  @override
+  initState() {
+    super.initState();
+    initStrokeState();
+  }
 
   // 显示Level Tips的方法
   _showLevelTips() {
@@ -93,7 +104,108 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
       )
     );
   }
+  // 自动挖矿控制
+  _mineControl() {
+    setState(() {
+      if (!_mining) {
+        Global.startMine();
+        initStrokeState();
+      } else {
+        Global.endMine();
+        strokeIndex = -1;
+      }
+    });
+  }
+  // 转盘动画
+  initStrokeState() {
+    if (_mining) {
+      initTimeState();
+      Timer.periodic(const Duration(milliseconds: 40), (timer) {
+        if (!_mining) timer.cancel();
+        setState(() {
+          if (strokeIndex < 33) {
+            strokeIndex++;
+          } else {
+            strokeIndex = 1;
+          }
+        });
+      });
+    }
+  }
+  // 时间倒计时
+  initTimeState() {
+    if (_mining) {
+      Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (!_mining || remainTime == 0) timer.cancel();
+        setState(() {
+          Global.decreaseMineTime();
+          if (remainTime == 0) Global.endMine();
+          remainHours = (remainTime ~/ 3600).toString().padLeft(2, '0');
+          remainMinutes = (remainTime % 3600 ~/ 60).toString().padLeft(2, '0');
+          remainSeconds = (remainTime % 3600 % 60).toString().padLeft(2, '0');
+        });
+      });
+    }
+  }
   
+  ///抖动动画控制器
+  final ShakeAnimationController _shakeAnimationController = ShakeAnimationController();
+  ///构建抖动效果
+  ShakeAnimationWidget buildShakeAnimationWidget() {
+    return ShakeAnimationWidget(
+      //抖动控制器
+      shakeAnimationController: _shakeAnimationController,
+      //微旋转的抖动
+      shakeAnimationType: ShakeAnimationType.SkewShake,
+      //设置不开启抖动
+      isForward: false,
+      //默认为 0 无限执行
+      shakeCount: 1,
+      //抖动的幅度 取值范围为[0,1]
+      shakeRange: 0.2,
+      //执行抖动动画的子Widget
+      child: Listener(
+        child: Image.asset('assets/icons/icon_simu.png', width: isClick ? 210 : 216),
+        onPointerDown: (event) {
+          setState(() {
+            isClick = true;
+          });
+        },
+        onPointerUp: (event) async {
+          int threshold = 5 * _level;
+          Global.increaseGold(threshold);
+          setState(() {
+            isClick = false;
+          });
+
+          // //判断抖动动画是否正在执行
+          // if (_shakeAnimationController.animationRunging) {
+          //   //停止抖动动画
+          //   _shakeAnimationController.stop();
+          // } else {
+          //   //开启抖动动画
+          //   //参数shakeCount 用来配置抖动次数
+          //   //通过 controller start 方法默认为 1
+          //   _shakeAnimationController.start(shakeCount: 1);
+          // }
+          _shakeAnimationController.start();
+
+          Overlay.of(context).insert(OverlayEntry(builder: (context) => Positioned(
+            top: 426,
+            left: 260,
+            child: FadeOutUp(child: Text('+$threshold', style: TextStyle(
+              color: Color.fromRGBO(36, 245, 219, 1),
+              fontSize: 24,
+              fontWeight: FontWeight.w900,
+              fontFamily: 'Lexend',
+              decoration: TextDecoration.none
+            )))
+          )));
+        },
+      )
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -317,138 +429,13 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
             child: Stack(
               alignment: Alignment.center , //指定未定位或部分定位widget的对齐方式
               children: <Widget>[
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Image.asset('assets/images/mine/mine_bg.png'),
-                    Image.asset('assets/images/mine/mine_ring_bg.png', scale: 2.76),
-                    Positioned(top: 136, child: Opacity(opacity: strokeIndex > 0 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_1.png', scale: 2.8),)),
-                    Positioned(top: 137, left: MediaQuery.of(context).size.width / 2 + 20, child: Opacity(
-                      opacity: strokeIndex > 1 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_2.png', scale: 2.8))
-                    ),
-                    Positioned(top: 144, left: MediaQuery.of(context).size.width / 2 + 46, child: Opacity(
-                      opacity: strokeIndex > 2 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_3.png', scale: 2.8))
-                    ),
-                    Positioned(top: 157, left: MediaQuery.of(context).size.width / 2 + 70, child: Opacity(
-                      opacity: strokeIndex > 3 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_4.png', scale: 2.8))
-                    ),
-                    Positioned(top: 174, left: MediaQuery.of(context).size.width / 2 + 92, child: Opacity(
-                      opacity: strokeIndex > 4 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_5.png', scale: 2.8))
-                    ),
-                    Positioned(top: 196, left: MediaQuery.of(context).size.width / 2 + 109, child: Opacity(
-                      opacity: strokeIndex > 5 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_6.png', scale: 2.8))
-                    ),
-                    Positioned(top: 222, left: MediaQuery.of(context).size.width / 2 + 124, child: Opacity(
-                      opacity: strokeIndex > 6 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_7.png', scale: 2.8))
-                    ),
-                    Positioned(top: 250, left: MediaQuery.of(context).size.width / 2 + 133, child: Opacity(
-                      opacity: strokeIndex > 7 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_8.png', scale: 2.8))
-                    ),
-                    Positioned(top: 278, left: MediaQuery.of(context).size.width / 2 + 136, child: Opacity(
-                      opacity: strokeIndex > 8 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_9.png', scale: 2.8))
-                    ),
-                    Positioned(top: 306, left: MediaQuery.of(context).size.width / 2 + 132, child: Opacity(
-                      opacity: strokeIndex > 9 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_10.png', scale: 2.8))
-                    ),
-                    Positioned(top: 332, left: MediaQuery.of(context).size.width / 2 + 124, child: Opacity(
-                      opacity: strokeIndex > 10 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_11.png', scale: 2.8))
-                    ),
-                    Positioned(top: 356, left: MediaQuery.of(context).size.width / 2 + 110, child: Opacity(
-                      opacity: strokeIndex > 11 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_12.png', scale: 2.8))
-                    ),
-                    Positioned(top: 377, left: MediaQuery.of(context).size.width / 2 + 91, child: Opacity(
-                      opacity: strokeIndex > 12 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_13.png', scale: 2.8))
-                    ),
-                    Positioned(top: 395, left: MediaQuery.of(context).size.width / 2 + 70, child: Opacity(
-                      opacity: strokeIndex > 13 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_14.png', scale: 2.8))
-                    ),
-                    Positioned(top: 410, left: MediaQuery.of(context).size.width / 2 + 46, child: Opacity(
-                      opacity: strokeIndex > 14 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_15.png', scale: 2.8))
-                    ),
-                    Positioned(top: 418, left: MediaQuery.of(context).size.width / 2 + 20, child: Opacity(
-                      opacity: strokeIndex > 15 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_16.png', scale: 2.8))
-                    ),
-                    Positioned(top: 422, child: Opacity(
-                      opacity: strokeIndex > 16 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_17.png', scale: 2.8))
-                    ),
-                    Positioned(top: 418, right: MediaQuery.of(context).size.width / 2 + 20, child: Opacity(
-                      opacity: strokeIndex > 17 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_18.png', scale: 2.8))
-                    ),
-                    Positioned(top: 410, right: MediaQuery.of(context).size.width / 2 + 46, child: Opacity(
-                      opacity: strokeIndex > 18 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_19.png', scale: 2.8))
-                    ),
-                    Positioned(top: 395, right: MediaQuery.of(context).size.width / 2 + 70, child: Opacity(
-                      opacity: strokeIndex > 19 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_20.png', scale: 2.8))
-                    ),
-                    Positioned(top: 377, right: MediaQuery.of(context).size.width / 2 + 91, child: Opacity(
-                      opacity: strokeIndex > 20 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_21.png', scale: 2.8))
-                    ),
-                    Positioned(top: 356, right: MediaQuery.of(context).size.width / 2 + 110, child: Opacity(
-                      opacity: strokeIndex > 21 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_22.png', scale: 2.8))
-                    ),
-                    Positioned(top: 332, right: MediaQuery.of(context).size.width / 2 + 124, child: Opacity(
-                      opacity: strokeIndex > 22 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_23.png', scale: 2.8))
-                    ),
-                    Positioned(top: 306, right: MediaQuery.of(context).size.width / 2 + 132, child: Opacity(
-                      opacity: strokeIndex > 23 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_24.png', scale: 2.8))
-                    ),
-                    Positioned(top: 278, right: MediaQuery.of(context).size.width / 2 + 136, child: Opacity(
-                      opacity: strokeIndex > 24 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_25.png', scale: 2.8))
-                    ),
-                    Positioned(top: 250, right: MediaQuery.of(context).size.width / 2 + 133, child: Opacity(
-                      opacity: strokeIndex > 25 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_26.png', scale: 2.8))
-                    ),
-                    Positioned(top: 222, right: MediaQuery.of(context).size.width / 2 + 124, child: Opacity(
-                      opacity: strokeIndex > 26 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_27.png', scale: 2.8))
-                    ),
-                    Positioned(top: 196, right: MediaQuery.of(context).size.width / 2 + 109, child: Opacity(
-                      opacity: strokeIndex > 27 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_28.png', scale: 2.8))
-                    ),
-                    Positioned(top: 174, right: MediaQuery.of(context).size.width / 2 + 92, child: Opacity(
-                      opacity: strokeIndex > 28 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_29.png', scale: 2.8))
-                    ),
-                    Positioned(top: 157, right: MediaQuery.of(context).size.width / 2 + 70, child: Opacity(
-                      opacity: strokeIndex > 29 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_30.png', scale: 2.8))
-                    ),
-                    Positioned(top: 144, right: MediaQuery.of(context).size.width / 2 + 46, child: Opacity(
-                      opacity: strokeIndex > 30 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_31.png', scale: 2.8))
-                    ),
-                    Positioned(top: 137, right: MediaQuery.of(context).size.width / 2 + 20, child: Opacity(
-                      opacity: strokeIndex > 31 ? 1 : 0,
-                      child: Image.asset('assets/images/mine/stroke_32.png', scale: 2.8))
-                    ),
-                    buildShakeAnimationWidget()
-                  ],
+                Image.asset('assets/images/mine/mine_bg.png'),
+                Image.asset('assets/images/mine/mine_ring_bg.png', scale: 2.76),
+                buildShakeAnimationWidget(),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.7,
+                  height: MediaQuery.of(context).size.width * 0.7,
+                  child: strokeRing(context),
                 ),
                 Positioned(
                   top: 0,
@@ -556,7 +543,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                               children: [
                                 Image.asset('assets/icons/icon_clock.png', width: 20, height: 20),
                                 SizedBox(width: 6),
-                                Text('8:00:00', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 16, height: 1.25)),
+                                Text('$remainHours:$remainMinutes:$remainSeconds', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 16, height: 1.25)),
                               ],
                             ),
                           ),
@@ -623,31 +610,12 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                             overlayColor: _mining ?Color.fromRGBO(112, 21, 239, 1) : Colors.black,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                           ),
-                          child: Text(_mining ? 'Mining  23.2 Coins' : 'Mine', style: TextStyle(
+                          onPressed: _mineControl,
+                          child: Text(_mining ? 'Mining  $miningCoins Coins' : 'Mine', style: TextStyle(
                             color: _mining ? Color.fromRGBO(112, 21, 239, 1) : Colors.white,
                             fontSize: 20,
                             fontWeight: FontWeight.bold
-                          )),
-                          onPressed: () {
-                            setState(() {
-                              if (!_mining) {
-                                _mining = true;
-                                Timer.periodic(const Duration(milliseconds: 40), (timer) {
-                                  if (!_mining) timer.cancel();
-                                  setState(() {
-                                    if (strokeIndex < 33) {
-                                      strokeIndex++;
-                                    } else {
-                                      strokeIndex = 1;
-                                    }
-                                  });
-                                });
-                              } else {
-                                _mining = false;
-                                strokeIndex = -1;
-                              }
-                            });
-                          }
+                          ))
                         ),
                       )
                     ],
@@ -660,64 +628,45 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
       ),
     );
   }
+}
 
-
-  
-    ///抖动动画控制器
-  final ShakeAnimationController _shakeAnimationController = ShakeAnimationController();
-  ///构建抖动效果
-  ShakeAnimationWidget buildShakeAnimationWidget() {
-    return ShakeAnimationWidget(
-      //抖动控制器
-      shakeAnimationController: _shakeAnimationController,
-      //微旋转的抖动
-      shakeAnimationType: ShakeAnimationType.SkewShake,
-      //设置不开启抖动
-      isForward: false,
-      //默认为 0 无限执行
-      shakeCount: 1,
-      //抖动的幅度 取值范围为[0,1]
-      shakeRange: 0.2,
-      //执行抖动动画的子Widget
-      child: Listener(
-        child: Image.asset('assets/icons/icon_simu.png', width: isClick ? 210 : 216),
-        onPointerDown: (event) {
-          setState(() {
-            isClick = true;
-          });
-        },
-        onPointerUp: (event) async {
-          int threshold = 5 * _level;
-          Global.increaseGold(threshold);
-          setState(() {
-            isClick = false;
-          });
-
-          // //判断抖动动画是否正在执行
-          // if (_shakeAnimationController.animationRunging) {
-          //   //停止抖动动画
-          //   _shakeAnimationController.stop();
-          // } else {
-          //   //开启抖动动画
-          //   //参数shakeCount 用来配置抖动次数
-          //   //通过 controller start 方法默认为 1
-          //   _shakeAnimationController.start(shakeCount: 1);
-          // }
-          _shakeAnimationController.start();
-
-          Overlay.of(context).insert(OverlayEntry(builder: (context) => Positioned(
-            top: 426,
-            left: 260,
-            child: FadeOutUp(child: Text('+$threshold', style: TextStyle(
-              color: Color.fromRGBO(36, 245, 219, 1),
-              fontSize: 24,
-              fontWeight: FontWeight.w900,
-              fontFamily: 'Lexend',
-              decoration: TextDecoration.none
-            )))
-          )));
-        },
-      )
-    );
-  }
+// 圆环动画
+Widget strokeRing(context) {
+  return Stack(
+    alignment: Alignment.center,
+    children: [
+      Positioned(top: 5, child: Opacity(opacity: strokeIndex > 0 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_1.png', scale: 2.8),)),
+      Positioned(top: 6, left: 162, child: Opacity(opacity: strokeIndex > 1 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_2.png', scale: 2.8))),
+      Positioned(top: 12, left: 186, child: Opacity(opacity: strokeIndex > 2 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_3.png', scale: 2.8))),
+      Positioned(top: 25, left: 209, child: Opacity(opacity: strokeIndex > 3 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_4.png', scale: 2.8))),
+      Positioned(top: 40, left: 228, child: Opacity(opacity: strokeIndex > 4 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_5.png', scale: 2.8))),
+      Positioned(top: 60, left: 244, child: Opacity(opacity: strokeIndex > 5 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_6.png', scale: 2.8))),
+      Positioned(top: 84, left: 257, child: Opacity(opacity: strokeIndex > 6 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_7.png', scale: 2.8))),
+      Positioned(top: 110, left: 265, child: Opacity(opacity: strokeIndex > 7 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_8.png', scale: 2.8))),
+      Positioned(top: 136, left: 268, child: Opacity(opacity: strokeIndex > 8 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_9.png', scale: 2.8))),
+      Positioned(bottom: 110, left: 265, child: Opacity(opacity: strokeIndex > 9 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_10.png', scale: 2.8))),
+      Positioned(bottom: 84, left: 257, child: Opacity(opacity: strokeIndex > 10 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_11.png', scale: 2.8))),
+      Positioned(bottom: 60, left: 244, child: Opacity(opacity: strokeIndex > 11 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_12.png', scale: 2.8))),
+      Positioned(bottom: 40, left: 228, child: Opacity(opacity: strokeIndex > 12 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_13.png', scale: 2.8))),
+      Positioned(bottom: 25, left: 209, child: Opacity(opacity: strokeIndex > 13 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_14.png', scale: 2.8))),
+      Positioned(bottom: 12, left: 186, child: Opacity(opacity: strokeIndex > 14 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_15.png', scale: 2.8))),
+      Positioned(bottom: 6, left: 162, child: Opacity(opacity: strokeIndex > 15 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_16.png', scale: 2.8))),
+      Positioned(bottom: 5, child: Opacity(opacity: strokeIndex > 16 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_17.png', scale: 2.8))),
+      Positioned(bottom: 6, right: 162, child: Opacity(opacity: strokeIndex > 17 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_18.png', scale: 2.8))),
+      Positioned(bottom: 12, right: 186, child: Opacity(opacity: strokeIndex > 18 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_19.png', scale: 2.8))),
+      Positioned(bottom: 25, right: 209, child: Opacity(opacity: strokeIndex > 19 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_20.png', scale: 2.8))),
+      Positioned(bottom: 40, right: 228, child: Opacity(opacity: strokeIndex > 20 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_21.png', scale: 2.8))),
+      Positioned(bottom: 60, right: 244, child: Opacity(opacity: strokeIndex > 21 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_22.png', scale: 2.8))),
+      Positioned(bottom: 84, right: 257, child: Opacity(opacity: strokeIndex > 22 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_23.png', scale: 2.8))),
+      Positioned(bottom: 110, right: 265, child: Opacity(opacity: strokeIndex > 23 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_24.png', scale: 2.8))),
+      Positioned(top: 136, right: 268, child: Opacity(opacity: strokeIndex > 24 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_25.png', scale: 2.8))),
+      Positioned(top: 110, right: 265, child: Opacity(opacity: strokeIndex > 25 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_26.png', scale: 2.8))),
+      Positioned(top: 84, right: 257, child: Opacity(opacity: strokeIndex > 26 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_27.png', scale: 2.8))),
+      Positioned(top: 60, right: 244, child: Opacity(opacity: strokeIndex > 27 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_28.png', scale: 2.8))),
+      Positioned(top: 40, right: 228, child: Opacity(opacity: strokeIndex > 28 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_29.png', scale: 2.8))),
+      Positioned(top: 25, right: 209, child: Opacity(opacity: strokeIndex > 29 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_30.png', scale: 2.8))),
+      Positioned(top: 12, right: 186, child: Opacity(opacity: strokeIndex > 30 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_31.png', scale: 2.8))),
+      Positioned(top: 6, right: 162, child: Opacity(opacity: strokeIndex > 31 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_32.png', scale: 2.8)))
+    ],
+  );
 }

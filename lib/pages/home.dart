@@ -12,6 +12,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
   int currentIndex = 1;
 
   /// Tab 改变
@@ -36,6 +37,10 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      body: IndexedStack(
+        index: currentIndex,
+        children: bottomBarViews,
+      ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(border: Border(top: BorderSide(color: Colors.black54, width: 0.3))),
         child: Theme(
@@ -69,7 +74,6 @@ class _MyHomePageState extends State<MyHomePage> {
           )
         ),
       ),
-      body: bottomBarViews[currentIndex],
     );
   }
 }

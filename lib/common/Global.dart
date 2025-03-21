@@ -14,6 +14,9 @@ class Global {
   static int goldToday = 0;
   static int goldTotal = 0;
   static int goldDaily = 0;
+  static bool isMining = false; // 是否开启自动挖矿
+  static String startMineTime = ''; // 开始自动挖矿时间
+  static int remainMineTime = 28800; // 剩余挖矿时间-默认8小时/28800秒
 
   static Object signHistory = {}; // 签到历史
   static List<String> weekSignedTimes = []; // 本周已签到日期
@@ -36,8 +39,46 @@ class Global {
     level = _prefs.getInt('level') ?? 1;
     exp = _prefs.getInt('exp') ?? 0;
     
+    initMineInfo();
     updateGold();
     initSignHistory();
+  }
+
+  // 开始挖矿
+  static startMine() {
+    isMining = true;
+    _prefs.setBool('isMining', true);
+    
+    DateTime now = DateTime.now();
+    startMineTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+    _prefs.setString('startMineTime', startMineTime);
+  }
+  // 结束挖矿
+  static endMine() {
+    isMining = false;
+    _prefs.setBool('isMining', false);
+    _prefs.setString('startMineTime', '');
+  }
+  static decreaseMineTime() {
+    remainMineTime -= 1;
+    _prefs.setInt('remainMineTime', remainMineTime);
+  }
+  // 初始化获取挖矿信息
+  static initMineInfo() {
+    isMining = _prefs.getBool('isMining') ?? false;
+    remainMineTime = _prefs.getInt('remainMineTime') ?? 0;
+    if (isMining) {
+      DateTime startTime = DateTime.parse(_prefs.getString('startMineTime') ?? '');
+      DateTime now = DateTime.now();
+      int diffSeconds = startTime.difference(now).inSeconds;
+      if (remainMineTime + diffSeconds > 0) {
+        remainMineTime = remainMineTime + diffSeconds;
+      } else {
+        remainMineTime = 0;
+        isMining = false;
+      }
+      _prefs.setInt('remainMineTime', remainMineTime);
+    }
   }
 
   // 增加经验

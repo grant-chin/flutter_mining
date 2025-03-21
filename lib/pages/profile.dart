@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mining/common/Global.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 List<String> images = [
   'assets/images/NFTs/nft_1.png',
   'assets/images/NFTs/nft_2.png',
 ];
+int get _level => Global.level; // 等级
+int get _exp => Global.exp; // 经验值
+int get goldTotal => Global.goldTotal;
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -88,7 +92,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                         colors: [Color.fromRGBO(112, 21, 239, 0.4), Color.fromRGBO(92, 81, 255, 0.4)]
                       )
                     ),
-                    child: Text('Lvl 1', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 12)),
+                    child: Text('Lvl $_level', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 12)),
                   ),
                   Container(
                     padding: EdgeInsets.fromLTRB(32, 16, 32, 16),
@@ -96,12 +100,12 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                       children: [
                         Row(
                           children: [
-                            Text('Lvl 1', style: TextStyle(color: Colors.white, fontSize: 14)),
+                            Text('Lvl $_level', style: TextStyle(color: Colors.white, fontSize: 14)),
                             Spacer(),
                             Row(
                               children: [
                                 Image.asset('assets/icons/icon_xp.png', width: 24,),
-                                Text('80', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 1), fontSize: 14)),
+                                Text('$_exp', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 1), fontSize: 14)),
                                 Text('/200', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 14)),
                               ],
                             )
@@ -122,7 +126,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                             ),
                             Positioned(
                               child: Container(
-                                width: 100 / 200 * 190 + 8,
+                                width: _exp / 200 * 190 + 8,
                                 height: 8,
                                 margin: EdgeInsets.all(2),
                                 decoration: BoxDecoration(
@@ -132,7 +136,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                               )
                             ),
                             Positioned(
-                              left: 100 / 200 * 190,
+                              left: _exp / 200 * 190,
                               child: Container(
                                 width: 4,
                                 height: 4,
@@ -172,7 +176,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                                   Image.asset('assets/icons/icon_coin.png', width: 20, height: 20,),
                                   Container(
                                     padding: EdgeInsets.only(top: 3, left: 4),
-                                    child: Text('123,12', style: TextStyle(color: Colors.white, fontSize: 16)),
+                                    child: Text('$goldTotal', style: TextStyle(color: Colors.white, fontSize: 16)),
                                   )
                                 ],
                               )
