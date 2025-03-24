@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mining/common/Global.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-List<String> images = [
-  'assets/images/NFTs/nft_1.png',
-  'assets/images/NFTs/nft_2.png',
-];
+String avator = Global.avator; // 头像
 int get _level => Global.level; // 等级
 int get _exp => Global.exp; // 经验值
 int get goldTotal => Global.goldTotal;
+int get rocketEff => Global.rocketEff; // 挖矿效率/加速器效率
+int get boosterNum => Global.boosterNum; // 拥有延时器数量
+List<String> get nftList => Global.nftList;
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -76,7 +76,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                         borderRadius: BorderRadius.circular(50)
                       ),
                       child: ClipOval(
-                        child: Image.asset('assets/images/avator/lion.jpeg', fit: BoxFit.cover),
+                        child: Image.asset(avator, fit: BoxFit.cover),
                       )
                     ),
                   ),
@@ -202,7 +202,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                                   Image.asset('assets/icons/icon_rocket.png', width: 20),
                                   Container(
                                     padding: EdgeInsets.only(left: 4),
-                                    child: Text('10 Gh/s', style: TextStyle(color: Colors.white, fontSize: 16)),
+                                    child: Text('$rocketEff Gh/s', style: TextStyle(color: Colors.white, fontSize: 16)),
                                   )
                                 ],
                               )
@@ -217,23 +217,41 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                             color: Color.fromRGBO(22, 22, 26, 1),
                             borderRadius: BorderRadius.circular(16)
                           ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            clipBehavior: Clip.none,
                             children: [
-                              Text('Booster', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.2), fontSize: 11),),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Image.asset('assets/icons/icon_alarm.png', width: 20, height: 20,),
-                                  Container(
-                                    padding: EdgeInsets.only(top: 1, left: 4),
-                                    child: Text('2h', style: TextStyle(color: Colors.white, fontSize: 16)),
+                                  Text('Booster', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.2), fontSize: 11),),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Image.asset('assets/icons/icon_alarm.png', width: 20, height: 20,),
+                                      Container(
+                                        padding: EdgeInsets.only(top: 1, left: 4),
+                                        child: Text('2h', style: TextStyle(color: Colors.white, fontSize: 16)),
+                                      )
+                                    ],
                                   )
                                 ],
+                              ),
+                              Positioned(
+                                top: -12,
+                                right: 0,
+                                child: Container(
+                                  padding: EdgeInsets.fromLTRB(8, 2, 8, 2),
+                                  decoration: BoxDecoration(
+                                    color: Color.fromRGBO(91, 50, 45, 1),
+                                    borderRadius: BorderRadius.circular(8)
+                                  ),
+                                  child: Text('x$boosterNum', style: TextStyle(color: Color.fromRGBO(252, 114, 90, 1), fontSize: 10, height: 1),),
+                                )
                               )
                             ],
-                          ),
+                          )
                         ),
                       ],
                     ),
@@ -243,7 +261,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                     padding: EdgeInsets.fromLTRB(16, 8, 16, 10),
                     child: Text('NFTs', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),),
                   ),
-                  images.isEmpty ? SizedBox(
+                  nftList.isEmpty ? SizedBox(
                     child: Column(
                       children: [
                         SizedBox(height: 120),
@@ -276,106 +294,113 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
 			),
 		);
 	}
-}
 
-Widget nftListWidget(context) {
-  return SizedBox(
-    height: MediaQuery.of(context).size.height - 455,
-    child: MasonryGridView.count(
-      padding: EdgeInsets.fromLTRB(16, 8, 16, kBottomNavigationBarHeight),
-      crossAxisCount: 2, //几列
-      mainAxisSpacing: 16, // 间距
-      crossAxisSpacing: 16, // 纵向间距？
-      itemCount: images.length, // 元素个数
-      itemBuilder: (context, index) {
-        return SizedBox(
-          child: Container(
-            padding: EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: Color.fromRGBO(22, 22, 26, 1),
-              borderRadius: BorderRadius.circular(16)
-            ),
-            child: Column(
-              children: [
-                Container(
-                  width: 168,
-                  height: 168,
-                  padding: EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: Color.fromRGBO(53, 54, 60, 1),
-                    borderRadius: BorderRadius.circular(16)
+  Widget nftListWidget(context) {
+    return SizedBox(
+      height: MediaQuery.of(context).size.height - 455,
+      child: MasonryGridView.count(
+        padding: EdgeInsets.fromLTRB(16, 8, 16, kBottomNavigationBarHeight),
+        crossAxisCount: 2, //几列
+        mainAxisSpacing: 16, // 间距
+        crossAxisSpacing: 16, // 纵向间距？
+        itemCount: nftList.length, // 元素个数
+        itemBuilder: (context, index) {
+          return SizedBox(
+            child: Container(
+              padding: EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: Color.fromRGBO(22, 22, 26, 1),
+                borderRadius: BorderRadius.circular(16)
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    width: 168,
+                    height: 168,
+                    padding: EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Color.fromRGBO(53, 54, 60, 1),
+                      borderRadius: BorderRadius.circular(16)
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.asset(nftList[index], fit: BoxFit.cover)
+                    )
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(images[index], fit: BoxFit.cover),
-                  )
-                ),
-                SizedBox(height: 16),
-                SizedBox(
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 100,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [Color.fromRGBO(112, 21, 239, 1), Color.fromRGBO(92, 81, 255, 1)],
-                          ),
+                  SizedBox(height: 16),
+                  SizedBox(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            height: 40,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [Color.fromRGBO(112, 21, 239, 1), Color.fromRGBO(92, 81, 255, 1)],
+                              ),
+                            ),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                overlayColor: Colors.white,
+                                shadowColor: Colors.transparent,
+                                padding: EdgeInsets.symmetric(horizontal: 12),
+                                elevation: 0, // 阴影
+                                backgroundColor: Colors.transparent,
+                                shape: BeveledRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4)
+                                )
+                              ),
+                              child: Text('Set as Avator', style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              )),
+                              onPressed: () {
+                                Global.setAvator(nftList[index]);
+                                setState(() {
+                                  avator = Global.avator;
+                                });
+                              }
+                            ),
+                          )
                         ),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            overlayColor: Colors.white,
-                            shadowColor: Colors.transparent,
-                            padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
-                            elevation: 0, // 阴影
-                            backgroundColor: Colors.transparent,
-                            shape: BeveledRectangleBorder(
-                              borderRadius: BorderRadius.circular(4)
-                            )
-                          ),
-                          child: Text('Set as Avator', style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          )),
-                          onPressed: () {}
-                        ),
-                      ),
-                      Spacer(),
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: Color.fromRGBO(35, 36, 41, 1),
-                          border: Border.all(color: Color.fromRGBO(53, 54, 60, 1), width: 1)
-                        ),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            overlayColor: Colors.white,
-                            shadowColor: Colors.transparent,
-                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                            elevation: 0, // 阴影
-                            backgroundColor: Colors.transparent,
-                            shape: BeveledRectangleBorder(
-                              borderRadius: BorderRadius.circular(4)
-                            )
-                          ),
-                          child: Image.asset('assets/icons/icon_download.png', width: 20,),
-                          onPressed: () {}
-                        ),
-                      ),
-                    ],
-                  )
-                ),
-              ],
+                        // SizedBox(width: 12),
+                        // Container(
+                        //   width: 40,
+                        //   height: 40,
+                        //   decoration: BoxDecoration(
+                        //     borderRadius: BorderRadius.circular(8),
+                        //     color: Color.fromRGBO(35, 36, 41, 1),
+                        //     border: Border.all(color: Color.fromRGBO(53, 54, 60, 1), width: 1)
+                        //   ),
+                        //   child: ElevatedButton(
+                        //     style: ElevatedButton.styleFrom(
+                        //       overlayColor: Colors.white,
+                        //       shadowColor: Colors.transparent,
+                        //       padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        //       elevation: 0, // 阴影
+                        //       backgroundColor: Colors.transparent,
+                        //       shape: BeveledRectangleBorder(
+                        //         borderRadius: BorderRadius.circular(4)
+                        //       )
+                        //     ),
+                        //     child: Image.asset('assets/icons/icon_download.png', width: 20,),
+                        //     onPressed: () {
+                        //     }
+                        //   ),
+                        // ),
+                      ],
+                    )
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
-    ),
-  );
+          );
+        },
+      ),
+    );
+  }
 }

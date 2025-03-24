@@ -12,6 +12,23 @@ int mintEndIndex = 0; // 结束点-控制奖品落点
 int mintRound = 0; // 圈数-控制抽奖动画
 int get rocketEff => Global.rocketEff + 10; // 挖矿效率/加速器效率
 int get rocketSuccessCount => Global.rocketSuccessCount; // 成功获取加速器次数
+int get goldBalance => Global.goldBalance; // 余额
+int nftIndex = 0; // 抽到随机NFT下标
+List<String> nfts = [
+  'assets/images/NFTs/nft_1.png',
+  'assets/images/NFTs/nft_2.png',
+  'assets/images/NFTs/nft_3.png',
+  'assets/images/NFTs/nft_4.png',
+  'assets/images/NFTs/nft_5.png',
+  'assets/images/NFTs/nft_6.png',
+  'assets/images/NFTs/nft_7.png',
+  'assets/images/NFTs/nft_8.png',
+  'assets/images/NFTs/nft_9.png',
+  'assets/images/NFTs/nft_10.png',
+  'assets/images/NFTs/nft_11.png',
+  'assets/images/NFTs/nft_12.png',
+  'assets/images/NFTs/nft_13.png',
+];
 
 class ItemPage extends StatefulWidget {
   const ItemPage({super.key});
@@ -41,6 +58,29 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
   // 开始铸造
   _goMinting() {
     if (isMinting) return;
+    // 余额不足
+    if (minerCost > goldBalance) {
+      showDialog(
+        context: context,
+        useSafeArea: false,
+        builder: (_) => Stack(
+          alignment: Alignment.center,
+          children: [
+            Positioned(
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                decoration: BoxDecoration(
+                  color: Color.fromRGBO(15, 15, 18, 1),
+                  borderRadius: BorderRadius.circular(16)
+                ),
+                child: Text('Insufficient Balance', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)),
+              )
+            )
+          ],
+        )
+      );
+      return;
+    }
     setState(() {
       isMinting = true;
       // 控制结束落点
@@ -64,6 +104,11 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
           mintRound = 0;
           timer.cancel();
 
+          if (miner == 'NFTs') {
+            setState(() {
+              nftIndex = Random().nextInt(13);
+            });
+          }
           showDialog(// 传入 context
             context: context,
             useSafeArea: false,
@@ -73,6 +118,22 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
         }
       });
     });
+  }
+
+  // 领取铸造道具
+  onClaimItem() {
+    Global.decreaseGold(minerCost);
+    if (miner == 'Rocket') {
+      Global.receiveRocket();
+      setState(() {
+        minerCost = 1000*rocketSuccessCount;
+      });
+    } else if (miner == 'Booster') {
+      Global.receiveBooster();
+    } else if (miner == 'NFTs') {
+      Global.receiveNFT(nfts[nftIndex]);
+    }
+    Navigator.pop(context); // 关闭弹窗
   }
 
   @override
@@ -282,6 +343,7 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
             ),
           ),
           Spacer(),
+          // Text('$goldBalance', style: TextStyle(color: Colors.white, fontSize: 10)),
           Container(
             margin: EdgeInsets.only(top: 12),
             padding: EdgeInsets.only(left: 16, right: 16),
@@ -396,21 +458,6 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
       'Booster': 'assets/icons/icon_alarm.png',
       'NFTs': 'assets/icons/icon_NFT.png',
     };
-
-    onClaimItem() {
-      if (miner == 'Rocket') {
-        Global.receiveRocket();
-        setState(() {
-          minerCost = 1000*rocketSuccessCount;
-        });
-      } else if (miner == 'Booster') {
-        Global.receiveBooster();
-      } else if (miner == 'NFTs') {
-        
-      }
-      Navigator.pop(context); // 关闭弹窗
-    }
-
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -444,14 +491,22 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
                       color: Color.fromRGBO(35, 36, 41, 1),
                       borderRadius: BorderRadius.circular(16)
                     ),
-                    child: miner == 'NFTs' ? dialogNftWidget() : Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Image.asset(imgs[miner]!, width: 50),
-                        Text(miner == 'Rocket' ? 'Miner' : 'Booster', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),),
-                        Text(miner == 'Rocket' ? '$rocketEff Gh/s' : '2h', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),)
-                      ],
-                    ),
+                    child: miner == 'NFTs' ? 
+                      Container(
+                        clipBehavior: Clip.hardEdge,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10)
+                        ),
+                        child: Image.asset(nfts[nftIndex], fit: BoxFit.cover)
+                      ) : 
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Image.asset(imgs[miner]!, width: 50),
+                          Text(miner == 'Rocket' ? 'Miner' : 'Booster', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),),
+                          Text(miner == 'Rocket' ? '$rocketEff Gh/s' : '2h', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),)
+                        ],
+                      ),
                   ),
                   SizedBox(
                     width: MediaQuery.of(context).size.width,
@@ -487,31 +542,4 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
       ],
     );
   }
-}
-
-// NFT铸造成功内容
-Widget dialogNftWidget() {
-  final nfts = [
-    'assets/images/NFTs/nft_1.png',
-    'assets/images/NFTs/nft_2.png',
-    'assets/images/NFTs/nft_3.png',
-    'assets/images/NFTs/nft_4.png',
-    'assets/images/NFTs/nft_5.png',
-    'assets/images/NFTs/nft_6.png',
-    'assets/images/NFTs/nft_7.png',
-    'assets/images/NFTs/nft_8.png',
-    'assets/images/NFTs/nft_9.png',
-    'assets/images/NFTs/nft_10.png',
-    'assets/images/NFTs/nft_11.png',
-    'assets/images/NFTs/nft_12.png',
-    'assets/images/NFTs/nft_13.png',
-  ];
-
-  return Container(
-    clipBehavior: Clip.hardEdge,
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(10)
-    ),
-    child: Image.asset(nfts[Random().nextInt(13)], fit: BoxFit.cover)
-  );
 }

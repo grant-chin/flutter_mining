@@ -4,12 +4,13 @@ import 'package:flutter_mining/common/Global.dart';
 import 'package:shake_animation_widget/shake_animation_widget.dart';
 import 'package:animate_do/animate_do.dart';
 
+String get avator => Global.avator; // 头像
+int get _level => Global.level; // 等级
+int get _exp => Global.exp; // 经验值
 int get goldYesterday => Global.goldYesterday;
 int get goldToday => Global.goldToday;
 int get goldTotal => Global.goldTotal;
 int get goldDaily => Global.goldDaily;
-int get _level => Global.level; // 等级
-int get _exp => Global.exp; // 经验值
 bool isClick = false; // 用于按钮按下缩放效果
 int strokeIndex = -1; // 当前显示圆环进度条下标
 bool get _mining => Global.isMining; // 是否正在mining状态
@@ -18,7 +19,7 @@ int get remainTime => Global.remainMineTime; // 剩余挖矿时间-默认8小时
 String remainHours = '00'; // 剩余挖矿时间-小时
 String remainMinutes = '00'; // 剩余挖矿时间-分钟
 String remainSeconds = '00'; // 剩余挖矿时间-秒
-double miningCoins = 0; // 自动挖矿金币数量
+int get minedCoins => Global.minedCoins; // 自动挖矿金币数量
 
 int get rocketEff => Global.rocketEff; // 挖矿效率/加速器效率
 int get levelEff => Global.levelEff; // 等级收益率
@@ -146,6 +147,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
       Timer.periodic(const Duration(seconds: 1), (timer) {
         if (!_mining || remainTime == 0) timer.cancel();
         setState(() {
+          Global.calcMinedCoins(1);
           Global.decreaseMineTime();
           if (remainTime == 0) Global.endMine();
           initFormatTime();
@@ -249,7 +251,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                           borderRadius: BorderRadius.circular(50)
                         ),
                         child: ClipOval(
-                          child: Image.asset('assets/images/avator/lion.jpeg', fit: BoxFit.cover),
+                          child: Image.asset(avator, fit: BoxFit.cover),
                         )
                       ),
                       SizedBox(width: 16),
@@ -630,8 +632,8 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                             disabledBackgroundColor: Color.fromRGBO(35, 36, 41, 1),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                           ),
-                          onPressed: remainTime > 0 ? _mineControl : null,
-                          child: Text(_mining ? 'Mining  $miningCoins Coins' : _mined ? 'Mined  $miningCoins Coins' : 'Mine($remainHours:$remainMinutes:$remainSeconds)', style: TextStyle(
+                          onPressed: remainTime > 0 && !_mined ? _mineControl : null,
+                          child: Text(_mining ? 'Mining  $minedCoins Coins' : _mined ? 'Mined  $minedCoins Coins' : 'Mine($remainHours:$remainMinutes:$remainSeconds)', style: TextStyle(
                             // color: _mining ? Color.fromRGBO(112, 21, 239, 1) : Colors.white,
                             fontSize: 20,
                             fontWeight: FontWeight.bold

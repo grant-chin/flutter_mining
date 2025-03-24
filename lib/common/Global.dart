@@ -7,24 +7,30 @@ var formater = DateFormat('yyyy-MM-dd');
 
 class Global {
   static late SharedPreferences _prefs;
+  static String avator = 'assets/images/avator/lion.jpeg';
   static int level = 1; // 等级
   static int levelEff = 20; // 等级收益率-乘法(等级*20)
   static int exp = 0; // 经验
+  static int goldBalance = 0; // 余额
   static Object goldHistory = {}; // 挖矿历史
   static int goldYesterday = 0;
   static int goldToday = 0;
   static int goldTotal = 0;
   static int goldDaily = 0;
+  static int goldMined = 0; // 通过自动挖矿获得的金币
   static bool isMining = false; // 是否开启自动挖矿
   static bool isMined = false; // 是否自动挖矿时间结束
   static String startMineTime = ''; // 开始自动挖矿时间
   static int remainMineTime = 28800; // 剩余挖矿时间-默认8小时/28800秒
+  static int remainStartMineTime = 0; // 开始自动挖矿时剩余挖矿时间
+  static int minedCoins = 0; // 自动挖矿金币收益
 
   static int mintTimes = 0; // 已铸造次数
   static int rocketSuccessCount = 1; // 成功获取加速器次数-乘法(默认x1)
   static int rocketEff = 10; // 加速器效率-N*10(第N次成功铸造)
   static int rocketNum = 0; // 拥有加速器数量
   static int boosterNum = 0; // 拥有延时器数量
+  static List<String> nftList = []; // 拥有的NFT列表
 
   static Object signHistory = {}; // 签到历史
   static List<String> weekSignedTimes = []; // 本周已签到日期
@@ -53,9 +59,11 @@ class Global {
 
   // 初始化账号信息
   static initUserInfo() {
+    avator = _prefs.getString('avator') ?? 'assets/images/avator/lion.jpeg';
     level = _prefs.getInt('level') ?? 1;
     levelEff = level * 20;
     exp = _prefs.getInt('exp') ?? 0;
+    nftList = _prefs.getStringList('nftList') ?? [];
   }
   // 初始化铸造信息
   static initMintInfo() {
@@ -67,18 +75,23 @@ class Global {
   }
   // 初始化挖矿信息
   static initMineInfo() {
+    goldMined = _prefs.getInt('goldMined') ?? 0;
+    goldBalance = _prefs.getInt('goldBalance') ?? 0;
     isMining = _prefs.getBool('isMining') ?? false;
     remainMineTime = _prefs.getInt('remainMineTime') ?? 0;
+    remainStartMineTime = _prefs.getInt('remainStartMineTime') ?? 0;
+    minedCoins = _prefs.getInt('minedCoins') ?? 0;
     if (isMining) {
       DateTime startTime = DateTime.parse(_prefs.getString('startMineTime') ?? '');
       DateTime now = DateTime.now();
       int diffSeconds = startTime.difference(now).inSeconds;
-      if (remainMineTime + diffSeconds > 0) {
-        remainMineTime = remainMineTime + diffSeconds;
+      if (remainStartMineTime + diffSeconds > 0) {
+        calcMinedCoins(diffSeconds.abs());
+        remainMineTime = remainStartMineTime + diffSeconds;
       } else {
+        calcMinedCoins(remainMineTime);
         remainMineTime = 0;
-        isMining = false;
-        isMined = true;
+        endMine();
       }
       _prefs.setInt('remainMineTime', remainMineTime);
     }
@@ -122,10 +135,18 @@ class Global {
     isClaimPeakAchiever = _prefs.getBool('isClaimPeakAchiever') ?? false;
   }
 
+  // 设置头像
+  static setAvator(value) {
+    avator = value;
+    _prefs.setString('avator', value);
+  }
+
+
   // 开始挖矿
   static startMine() {
     int remainMineTime = _prefs.getInt('remainMineTime') ?? 0;
     if (remainMineTime == 0) return;
+    _prefs.setInt('remainStartMineTime', remainMineTime);
     isMining = true;
     _prefs.setBool('isMining', true);
     
@@ -135,10 +156,18 @@ class Global {
   }
   // 结束挖矿
   static endMine() {
+    _prefs.setInt('remainStartMineTime', 0);
+    goldMined += minedCoins;
+    goldBalance += minedCoins;
+    _prefs.setInt('goldMined', goldMined);
+    _prefs.setInt('goldBalance', goldBalance);
+    minedCoins = 0;
+    _prefs.setInt('minedCoins', minedCoins);
     isMining = false;
     isMined = false;
     _prefs.setBool('isMining', false);
     _prefs.setString('startMineTime', '');
+    updateGold();
   }
   // 减少挖矿时间
   static decreaseMineTime() {
@@ -150,7 +179,15 @@ class Global {
     remainMineTime += val;
     _prefs.setInt('remainMineTime', remainMineTime);
   }
-  
+  // 计算挖矿收益 - minedTime秒
+  static calcMinedCoins(minedTime) {
+    // 每分钟金币产出 = (算力 × 基础金币收益) * (1 + 动态加成系数（收获率）)
+    // 初始算力=10Gh/s  算力递增： 通过在铸造中心不断提升加速器的效率提升每s的算力
+    // 基础金币收益=0.1金币/s
+    // 动态加成系数与用户当前的等级数有关
+    minedCoins = (minedCoins + rocketEff * 0.1 * (1+(levelEff/100)) * minedTime).toInt();
+    _prefs.setInt('minedCoins', minedCoins);
+  }
 
   // 获得加速器
   static receiveRocket() {
@@ -178,6 +215,13 @@ class Global {
       _prefs.setInt('remainMineTime', remainMineTime);
     }
   }
+  // 获得NFT
+  static receiveNFT(nftItem) {
+    mintTimes += 1;
+    _prefs.setInt('mintTimes', mintTimes);
+    nftList.add(nftItem);
+    _prefs.setStringList('nftList', nftList);
+  }
 
 
   // 增加经验
@@ -197,8 +241,15 @@ class Global {
     }
     int newGold = _prefs.getInt('gold_$time') ?? 0;
     _prefs.setInt('gold_$time', newGold + value);
+    goldBalance += value;
+    _prefs.setInt('goldBalance', goldBalance);
 
     updateGold();
+  }
+  // 减少金币
+  static decreaseGold(int value) {
+    goldBalance -= value;
+    _prefs.setInt('goldBalance', goldBalance);
   }
   // 更新金币数量
   static updateGold() {
@@ -213,7 +264,7 @@ class Global {
     historyTimes.forEach((String time) {
       _goldTotal += _prefs.getInt('gold_$time') ?? 0;
     });
-    goldTotal = _goldTotal;
+    goldTotal = _goldTotal + goldMined;
   }
 
 
