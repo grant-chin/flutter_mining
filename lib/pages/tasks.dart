@@ -1,7 +1,20 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_mining/common/Global.dart';
+
+int weekday = DateTime.now().weekday;
+int get _level => Global.level; // 等级
+List<String> get claimedArr => Global.weekSignedTimes; // 周签到时间
+bool get isSignedToday => Global.isSignedToday; // 今日是否已签到
+bool get isRate => Global.isRate; // 是否评价
+bool get isShared => Global.isShared; // 是否分享
+int get mintTimes => Global.mintTimes; // 已铸造次数
+bool get isClaimActivePioneer => Global.isClaimActivePioneer; // 是否已领取铸造先锋奖励
+bool get isClaimGoalAchiever => Global.isClaimGoalAchiever; // 是否已领取NFT铸造成功成就
+bool get isClaimPowerExpert => Global.isClaimPowerExpert; // 是否已领取铸造专家成就
+bool get isClaimGoalMaster => Global.isClaimGoalMaster; // 是否已领取铸造专家成就
+bool get isClaimVitalityChampion => Global.isClaimVitalityChampion; // 是否已领取铸造冠军成就
+bool get isClaimPeakAchiever => Global.isClaimPeakAchiever; // 是否已领取巅峰成就
 
 class TasksPage extends StatefulWidget {
   const TasksPage({super.key});
@@ -11,20 +24,7 @@ class TasksPage extends StatefulWidget {
 }
 
 class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMixin {
-  int weekday = DateTime.now().weekday;
-  List<String> get claimedArr => Global.weekSignedTimes;
-  bool get isSignedToday => Global.isSignedToday; // 今日是否已签到
-  bool get isRate => Global.isRate; // 是否评价
-  bool get isShared => Global.isShared; // 是否分享
-  int get mintTimes => Global.mintTimes; // 已铸造次数
-  bool get isClaimActivePioneer => Global.isClaimActivePioneer; // 是否已领取铸造先锋奖励
-  bool get isClaimGoalAchiever => Global.isClaimGoalAchiever; // 是否已领取NFT铸造成功成就
-  bool get isClaimPowerExpert => Global.isClaimPowerExpert; // 是否已领取铸造专家成就
-  bool get isClaimGoalMaster => Global.isClaimGoalMaster; // 是否已领取铸造专家成就
-  bool get isClaimVitalityChampion => Global.isClaimVitalityChampion; // 是否已领取铸造冠军成就
-  bool get isClaimPeakAchiever => Global.isClaimPeakAchiever; // 是否已领取巅峰成就
-
-  _showDialog(type, subtitle, exp) {
+  _showDialog(type, subtitle, exp, claimFunc) {
     final imgs = {
       1: 'assets/images/tasks/dialog_title_rating_complete.png', // 评价
       2: 'assets/images/tasks/dialog_title_sharing_is_winning.png', // 分享
@@ -100,7 +100,7 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           ),
                           onPressed: () {
-                            Global.increaseExp(exp);
+                            claimFunc();
                             Navigator.pop(context);
                           },
                           child: Text('Claim it', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
@@ -121,7 +121,7 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                 padding: EdgeInsets.all(0),
               ),
               onPressed: () {
-                Global.increaseExp(exp);
+                claimFunc();
                 Navigator.pop(context);
               },
               child: Image.asset('assets/icons/icon_close.png', width: 40)
@@ -149,9 +149,8 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
           )),
         ),
         SliverToBoxAdapter(
-          child:  Container(
+          child:  SizedBox(
             width: MediaQuery.of(context).size.width,
-            // decoration: BoxDecoration(color: Colors.black),
             child: Column(
               children: [
                 Stack(
@@ -228,77 +227,85 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                   child: Column(
                     children: <Widget>[
                       Image.asset('assets/images/tasks/task_list.png'),
-                      isRate ? Container() : taskItem(
+                      // 评分
+                      taskItem(
                         'assets/images/tasks/icon_thumb.png',
                         'Rate us',
                         'Rating successful +50',
-                        'Share',
+                        isRate ? 'Claimed' : 'Claim',
                         () {
-                          _showDialog(1, 'Thanks for Your Feedback!', 50);
+                          _showDialog(1, 'Thanks for Your Feedback!', 50, Global.receiveRateAward);
                         }
                       ),
-                      isShared ? Container() : taskItem(
+                      // 分享
+                      taskItem(
                         'assets/images/tasks/icon_clap.png',
                         'Invite friends',
                         'Successfully shared once +25',
-                        'Share',
+                        isShared ? 'Claimed' : 'Claim',
                         () {
-                          _showDialog(2, 'Speread the Joy!', 25);
+                          _showDialog(2, 'Speread the Joy!', 25, Global.receiveShareAward);
                         }
                       ),
-                      isClaimActivePioneer ? Container() : taskItem(
+                      // 3次铸造成功成就
+                      taskItem(
                         'assets/images/tasks/icon_potholing.png',
                         'Active pioneer',
                         'Mining 3 times +200',
-                        'Claim',
-                        () {
-                          _showDialog(3, 'Mining Rewards Unlocked!', 200);
-                        }
+                        isClaimActivePioneer ? 'Claimed' : 'Claim',
+                        mintTimes > 2 ? () {
+                          _showDialog(3, 'Mining Rewards Unlocked!', 200, Global.receiveMineAward_3);
+                        } : null
                       ),
-                      isClaimGoalAchiever ? Container() : taskItem(
+                      // 首次获得NFT成就
+                      taskItem(
                         'assets/images/tasks/icon_mystery.png',
                         'Goal achiever',
                         'Complete 1 NFT minting +500',
-                        'Claim',
+                        isClaimGoalAchiever ? 'Claimed' : 'Claim',
                         () {
-                          _showDialog(2, 'Mint Complete! Welcome to the Future!', 500);
+                          _showDialog(2, 'Mint Complete! Welcome to the Future!', 500, Global.receiveNFTAward);
                         }
                       ),
-                      isClaimPowerExpert ? Container() : taskItem(
+                      // 5次铸造成功成就
+                      taskItem(
                         'assets/images/tasks/icon_potholing.png',
                         'Power expert',
                         'Mining 5 times +600',
-                        'Claim',
-                        () {
-                          _showDialog(2, 'Mining Rewards Unlocked!', 600);
-                        }
+                        isClaimPowerExpert ? 'Claimed' : 'Claim',
+                        mintTimes > 5 ? () {
+                          _showDialog(2, 'Mining Rewards Unlocked!', 600, Global.receiveMineAward_5);
+                        } : null
                       ),
-                      isClaimGoalMaster ? Container() : taskItem(
+                      // 10级成就
+                      taskItem(
                         'assets/images/tasks/icon_badge_10.png',
                         'Goal master',
                         'Reach Level 10 +1000',
-                        'Claim',
-                        () {
-                          _showDialog(2, 'Level 10 Unlocked! You’re on Fire!', 1000);
-                        }
+                        isClaimGoalMaster ? 'Claimed' : 'Claim',
+                        _level >= 10 ? () {
+                          _showDialog(2, 'Level 10 Unlocked! You’re on Fire!', 1000, Global.receiveLevelAward_10);
+                        } : null
                       ),
-                      isClaimVitalityChampion ? Container() : taskItem(
+                      // 20次铸造成功成就
+                      taskItem(
                         'assets/images/tasks/icon_potholing.png',
                         'Vitality champion',
                         'Mining 20 times +2000',
-                        'Claim',
-                        () {
-                          _showDialog(2, 'Mining Rewards Unlocked!', 2000);
-                        }
+                        isClaimVitalityChampion ? 'Claimed' : 'Claim',
+                        mintTimes > 20 ? () {
+                          _showDialog(2, 'Mining Rewards Unlocked!', 2000, Global.receiveMineAward_20);
+                        } : null
                       ),
-                      isClaimPeakAchiever ? Container() : taskItem(
+                      // 50级成就
+                      taskItem(
                         'assets/images/tasks/icon_badge_50.png',
                         'Peak achiever',
                         'Reach Level 50 +5000',
-                        'Claim',
-                        () {
-                          _showDialog(2, 'Level 50 Unlocked! You’re on Fire!', 5000);
-                        }
+                        isClaimPeakAchiever ? 'Claimed' : 'Claim',
+                        _level >= 50 ? () {
+                          _showDialog(2, 'Level 50 Unlocked! You’re on Fire!', 5000, Global.receiveLevelAward_50);
+                        } : null
                       ),
                     ],
                   ),
@@ -341,13 +348,17 @@ Widget taskItem(img, title, desc, btnText, func) {
         Spacer(),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
+            overlayColor: btnText == 'Claimed' ? Colors.transparent : Colors.white,
+            foregroundColor: Colors.white,
             backgroundColor: Color.fromRGBO(112, 21, 239, 1),
-            overlayColor: Colors.white,
+            disabledForegroundColor: btnText == 'Claimed' ? Colors.white : Color.fromRGBO(249, 249, 249, 0.2),
+            disabledBackgroundColor: btnText == 'Claimed' ? Color.fromRGBO(112, 21, 239, 0.3) : Color.fromRGBO(35, 36, 41, 1),
             padding: EdgeInsets.symmetric(horizontal: 16),
+            side: BorderSide(color: btnText == 'Claimed' ? Color.fromRGBO(112, 21, 239, 1) : Colors.transparent),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           ),
-          onPressed: func,
-          child: Text(btnText, style: TextStyle(color: Colors.white, fontSize: 16)),
+          onPressed: btnText == 'Claimed' ? null : func,
+          child: Text(btnText, style: TextStyle(fontSize: 16)),
         )
       ],
     ),

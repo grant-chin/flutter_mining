@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter_mining/common/Global.dart';
 
 String miner = ''; // 当前选择奖品 Rocket/Booster/NFTs
 int minerCost = 0; // 抽奖花费
@@ -9,6 +10,8 @@ bool isMinting = false; // 是否正在抽奖
 int mintIndex = -1;
 int mintEndIndex = 0; // 结束点-控制奖品落点
 int mintRound = 0; // 圈数-控制抽奖动画
+int get rocketEff => Global.rocketEff + 10; // 挖矿效率/加速器效率
+int get rocketSuccessCount => Global.rocketSuccessCount; // 成功获取加速器次数
 
 class ItemPage extends StatefulWidget {
   const ItemPage({super.key});
@@ -24,7 +27,7 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
       if (miner != name) {
         miner = name;
         switch(name) {
-          case 'Rocket': minerCost = 1000; break;
+          case 'Rocket': minerCost = 1000*rocketSuccessCount; break;
           case 'Booster': minerCost = 2000; break;
           case 'NFTs': minerCost = 10000; break;
         }
@@ -37,8 +40,8 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
 
   // 开始铸造
   _goMinting() {
+    if (isMinting) return;
     setState(() {
-      if (isMinting) return;
       isMinting = true;
       // 控制结束落点
       switch(miner) {
@@ -385,95 +388,105 @@ class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin
       )
     );
   }
-}
 
-// 铸造成功弹窗
-Widget minerDialog(context) {
-  final imgs = {
-    'Rocket': 'assets/icons/icon_rocket.png',
-    'Booster': 'assets/icons/icon_alarm.png',
-    'NFTs': 'assets/icons/icon_NFT.png',
-  };
+  // 铸造成功弹窗
+  Widget minerDialog(context) {
+    final imgs = {
+      'Rocket': 'assets/icons/icon_rocket.png',
+      'Booster': 'assets/icons/icon_alarm.png',
+      'NFTs': 'assets/icons/icon_NFT.png',
+    };
 
-  return Stack(
-    alignment: Alignment.center,
-    children: [
-      Positioned.fill(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: 2,
-            sigmaY: 2,
-          ),
-          child: Container(
-            color: Colors.black12,
+    onClaimItem() {
+      if (miner == 'Rocket') {
+        Global.receiveRocket();
+        setState(() {
+          minerCost = 1000*rocketSuccessCount;
+        });
+      } else if (miner == 'Booster') {
+        Global.receiveBooster();
+      } else if (miner == 'NFTs') {
+        
+      }
+      Navigator.pop(context); // 关闭弹窗
+    }
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Positioned.fill(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(
+              sigmaX: 2,
+              sigmaY: 2,
+            ),
+            child: Container(
+              color: Colors.black12,
+            ),
           ),
         ),
-      ),
-      Positioned(top: 180, child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Image.asset('assets/images/item/dialog_miner.png', width: MediaQuery.of(context).size.width,),
-          Positioned(bottom: 30, child: SizedBox(
-            width: MediaQuery.of(context).size.width - 160,
-            height: MediaQuery.of(context).size.width - 150,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('You’ve Unlocked a Mystery Item!', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8)),),
-                Container(
-                  width: 160,
-                  height: 144,
-                  padding: EdgeInsets.symmetric(vertical: 14, horizontal: 20),
-                  decoration: BoxDecoration(
-                    color: Color.fromRGBO(35, 36, 41, 1),
-                    borderRadius: BorderRadius.circular(16)
-                  ),
-                  child: miner == 'NFTs' ? dialogNftWidget() : Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Image.asset(imgs[miner]!, width: 50),
-                      Text(miner == 'Rocket' ? 'Miner' : 'Booster', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),),
-                      Text(miner == 'Rocket' ? '20 Gh/s' : '2h', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),)
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: 58,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      overlayColor: Colors.white,
-                      foregroundColor: Colors.white,
-                      backgroundColor: Color.fromRGBO(112, 21, 239, 1),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        Positioned(top: 180, child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Image.asset('assets/images/item/dialog_miner.png', width: MediaQuery.of(context).size.width,),
+            Positioned(bottom: 30, child: SizedBox(
+              width: MediaQuery.of(context).size.width - 160,
+              height: MediaQuery.of(context).size.width - 150,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('You’ve Unlocked a Mystery Item!', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8)),),
+                  Container(
+                    width: 160,
+                    height: 144,
+                    padding: EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: Color.fromRGBO(35, 36, 41, 1),
+                      borderRadius: BorderRadius.circular(16)
                     ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text('Claim it', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    child: miner == 'NFTs' ? dialogNftWidget() : Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Image.asset(imgs[miner]!, width: 50),
+                        Text(miner == 'Rocket' ? 'Miner' : 'Booster', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),),
+                        Text(miner == 'Rocket' ? '$rocketEff Gh/s' : '2h', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),)
+                      ],
+                    ),
                   ),
-                )
-              ],
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: 58,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        overlayColor: Colors.white,
+                        foregroundColor: Colors.white,
+                        backgroundColor: Color.fromRGBO(112, 21, 239, 1),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      ),
+                      onPressed: onClaimItem,
+                      child: Text('Claim it', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    ),
+                  )
+                ],
+              ),
+            ))
+          ],
+        )),
+        Positioned(
+          top: MediaQuery.of(context).size.width + 210,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              overlayColor: Colors.transparent,
+              backgroundColor: Colors.transparent,
+              padding: EdgeInsets.all(0),
             ),
-          ))
-        ],
-      )),
-      Positioned(
-        top: MediaQuery.of(context).size.width + 210,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            overlayColor: Colors.transparent,
-            backgroundColor: Colors.transparent,
-            padding: EdgeInsets.all(0),
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Image.asset('assets/icons/icon_close.png', width: 40)
+            onPressed: onClaimItem,
+            child: Image.asset('assets/icons/icon_close.png', width: 40)
+          )
         )
-      )
-    ],
-  );
+      ],
+    );
+  }
 }
 
 // NFT铸造成功内容

@@ -13,11 +13,16 @@ int get _exp => Global.exp; // 经验值
 bool isClick = false; // 用于按钮按下缩放效果
 int strokeIndex = -1; // 当前显示圆环进度条下标
 bool get _mining => Global.isMining; // 是否正在mining状态
+bool get _mined => Global.isMined; // 是否自动挖矿时间结束
 int get remainTime => Global.remainMineTime; // 剩余挖矿时间-默认8小时/28800秒
 String remainHours = '00'; // 剩余挖矿时间-小时
 String remainMinutes = '00'; // 剩余挖矿时间-分钟
 String remainSeconds = '00'; // 剩余挖矿时间-秒
 double miningCoins = 0; // 自动挖矿金币数量
+
+int get rocketEff => Global.rocketEff; // 挖矿效率/加速器效率
+int get levelEff => Global.levelEff; // 等级收益率
+int get boosterNum => Global.boosterNum; // 拥有延时器数量
 
 class MinePage extends StatefulWidget {
   const MinePage({super.key});
@@ -30,6 +35,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
   @override
   initState() {
     super.initState();
+    initFormatTime();
     initStrokeState();
   }
 
@@ -107,12 +113,14 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
   // 自动挖矿控制
   _mineControl() {
     setState(() {
-      if (!_mining) {
-        Global.startMine();
-        initStrokeState();
-      } else {
+      if (_mined) {
+        Global.endMine();
+      } else if (_mining) {
         Global.endMine();
         strokeIndex = -1;
+      } else {
+        Global.startMine();
+        initStrokeState();
       }
     });
   }
@@ -140,12 +148,18 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
         setState(() {
           Global.decreaseMineTime();
           if (remainTime == 0) Global.endMine();
-          remainHours = (remainTime ~/ 3600).toString().padLeft(2, '0');
-          remainMinutes = (remainTime % 3600 ~/ 60).toString().padLeft(2, '0');
-          remainSeconds = (remainTime % 3600 % 60).toString().padLeft(2, '0');
+          initFormatTime();
         });
       });
     }
+  }
+  // 剩余时间格式化
+  initFormatTime() {
+    setState(() {
+      remainHours = (remainTime ~/ 3600).toString().padLeft(2, '0');
+      remainMinutes = (remainTime % 3600 ~/ 60).toString().padLeft(2, '0');
+      remainSeconds = (remainTime % 3600 % 60).toString().padLeft(2, '0');
+    });
   }
   
   ///抖动动画控制器
@@ -501,7 +515,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    Text('10', style: TextStyle(color: Colors.white, fontSize: 16, height: 1.25)),
+                                    Text('$rocketEff', style: TextStyle(color: Colors.white, fontSize: 16, height: 1.25)),
                                     Text(' Gh/s', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 11)),
                                   ],
                                 )
@@ -523,7 +537,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                               children: [
                                 Image.asset('assets/icons/icon_crown.png', width: 20, height: 20),
                                 SizedBox(width: 6),
-                                Text('20%', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 16, height: 1.25)),
+                                Text('$levelEff%', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 16, height: 1.25)),
                               ],
                             ),
                           ),
@@ -557,8 +571,8 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                   bottom: 0,
                   child: Row(
                     children: [
-                      SizedBox(width: 16),
-                      Stack(
+                      SizedBox(width: boosterNum > 0 ? 16 : 0),
+                      boosterNum > 0 ? Stack(
                         alignment: Alignment.center,
                         clipBehavior: Clip.none,
                         children: [
@@ -576,7 +590,10 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                                 overlayColor: Color.fromRGBO(92, 81, 255, 1),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                               ),
-                              onPressed: () {},
+                              onPressed: () {
+                                Global.useBooster();
+                                initFormatTime();
+                              },
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -595,24 +612,27 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                                 color: Color.fromRGBO(91, 50, 45, 1),
                                 borderRadius: BorderRadius.circular(8)
                               ),
-                              child: Text('x2', style: TextStyle(color: Color.fromRGBO(252, 114, 90, 1), fontSize: 10, height: 1),),
+                              child: Text('x$boosterNum', style: TextStyle(color: Color.fromRGBO(252, 114, 90, 1), fontSize: 10, height: 1),),
                             )
                           )
                         ],
-                      ),
+                      ) : Container(),
                       Container(
-                        width: MediaQuery.of(context).size.width - 80,
+                        width: MediaQuery.of(context).size.width - (boosterNum > 0 ? 80 : 0),
                         height: 96,
                         padding: EdgeInsets.all(16),
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color.fromRGBO(112, 21, 239, _mining ? 0.3 : 1),
-                            overlayColor: _mining ?Color.fromRGBO(112, 21, 239, 1) : Colors.black,
+                            overlayColor: _mining || _mined ?Color.fromRGBO(112, 21, 239, 1) : Colors.black,
+                            foregroundColor: _mining ? Color.fromRGBO(112, 21, 239, 1) : Colors.white,
+                            backgroundColor: Color.fromRGBO(112, 21, 239, _mining || _mined ? 0.3 : 1),
+                            disabledForegroundColor: Color.fromRGBO(249, 249, 249, 0.2),
+                            disabledBackgroundColor: Color.fromRGBO(35, 36, 41, 1),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                           ),
-                          onPressed: _mineControl,
-                          child: Text(_mining ? 'Mining  $miningCoins Coins' : 'Mine', style: TextStyle(
-                            color: _mining ? Color.fromRGBO(112, 21, 239, 1) : Colors.white,
+                          onPressed: remainTime > 0 ? _mineControl : null,
+                          child: Text(_mining ? 'Mining  $miningCoins Coins' : _mined ? 'Mined  $miningCoins Coins' : 'Mine($remainHours:$remainMinutes:$remainSeconds)', style: TextStyle(
+                            // color: _mining ? Color.fromRGBO(112, 21, 239, 1) : Colors.white,
                             fontSize: 20,
                             fontWeight: FontWeight.bold
                           ))
