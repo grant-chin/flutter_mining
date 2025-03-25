@@ -2,7 +2,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_mining/common/Global.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:share_extend/share_extend.dart';
+import 'package:share_plus/share_plus.dart';
+// import 'package:share_extend/share_extend.dart';
 
 int weekday = DateTime.now().weekday;
 int get _level => Global.level; // 等级
@@ -115,7 +116,8 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
     setState(() {
       successShared = true;
     });
-    ShareExtend.share("🚀 Earn Gold Together! 🚀Join me on SimuPool - the smartest way to mine crypto effortlessly! 💎", "text");
+    Share.share('🚀 Earn Gold Together! 🚀Join me on SimuPool - the smartest way to mine crypto effortlessly! 💎');
+    // ShareExtend.share("🚀 Earn Gold Together! 🚀Join me on SimuPool - the smartest way to mine crypto effortlessly! 💎", "text");
   }
   // 领取奖励弹窗
   _showDialog(type, subtitle, exp, claimFunc) {
