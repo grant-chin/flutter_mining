@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mining/common/Global.dart';
 
 class SettingView extends StatelessWidget {
   const SettingView({super.key});
@@ -7,8 +8,7 @@ class SettingView extends StatelessWidget {
 	Widget build(BuildContext context) {
 		return Scaffold(
       backgroundColor: Colors.black,
-			body: Stack(
-        alignment: Alignment.topCenter,
+			body: Column(
         children: [
           AppBar(
             backgroundColor: Colors.black,
@@ -20,80 +20,77 @@ class SettingView extends StatelessWidget {
               fontWeight: FontWeight.bold
             ))
           ),
-          Positioned(
-            top: kToolbarHeight,
-            child: Column(
-              children: [
-                SizedBox(height: 16),
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 58,
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                  ),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      alignment: Alignment.centerLeft,
-                      overlayColor: Colors.white,
-                      shadowColor: Colors.transparent,
-                      elevation: 0, // 阴影
-                      backgroundColor: Colors.transparent,
-                      shape: BeveledRectangleBorder(
-                        borderRadius: BorderRadius.circular(0)
-                      )
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Policy privacy', style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold
-                        )),
-                        Icon(Icons.arrow_forward_ios, color: Colors.white,)
-                      ],
-                    ),
-                    onPressed: () {}
-                  ),
+          Column(
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: 58,
+                decoration: BoxDecoration(
+                  color: Colors.black,
                 ),
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 58,
-                  decoration: BoxDecoration(
-                    color: Colors.black,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    alignment: Alignment.centerLeft,
+                    overlayColor: Colors.white,
+                    shadowColor: Colors.transparent,
+                    elevation: 0, // 阴影
+                    backgroundColor: Colors.transparent,
+                    shape: BeveledRectangleBorder(
+                      borderRadius: BorderRadius.circular(0)
+                    )
                   ),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      alignment: Alignment.centerLeft,
-                      overlayColor: Colors.white,
-                      shadowColor: Colors.transparent,
-                      elevation: 0, // 阴影
-                      backgroundColor: Colors.transparent,
-                      shape: BeveledRectangleBorder(
-                        borderRadius: BorderRadius.circular(0)
-                      )
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Terms of service', style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold
-                        )),
-                        Icon(Icons.arrow_forward_ios, color: Colors.white,)
-                      ],
-                    ),
-                    onPressed: () {}
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Policy privacy', style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold
+                      )),
+                      Icon(Icons.arrow_forward_ios, color: Colors.white,)
+                    ],
                   ),
+                  onPressed: () {
+                    Global.clear();
+                  }
                 ),
-              ],
-            )
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: 58,
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                ),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    alignment: Alignment.centerLeft,
+                    overlayColor: Colors.white,
+                    shadowColor: Colors.transparent,
+                    elevation: 0, // 阴影
+                    backgroundColor: Colors.transparent,
+                    shape: BeveledRectangleBorder(
+                      borderRadius: BorderRadius.circular(0)
+                    )
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Terms of service', style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold
+                      )),
+                      Icon(Icons.arrow_forward_ios, color: Colors.white,)
+                    ],
+                  ),
+                  onPressed: () {}
+                ),
+              ),
+            ],
           ),
-          Positioned(
-            bottom: kBottomNavigationBarHeight,
-            child: Text('v 1.0.1', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.2), fontSize: 18, fontWeight: FontWeight.bold),)
-          )
+          Spacer(),
+          Text('v 1.0.1', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.2), fontSize: 18, fontWeight: FontWeight.bold)),
+          SizedBox(height: kBottomNavigationBarHeight)
         ],
       ),
 		);

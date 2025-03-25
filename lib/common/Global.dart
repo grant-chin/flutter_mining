@@ -32,6 +32,7 @@ class Global {
   static int boosterNum = 0; // 拥有延时器数量
   static List<String> nftList = []; // 拥有的NFT列表
 
+  static int goldSigned = 0; // 通过签到获得的金币
   static Object signHistory = {}; // 签到历史
   static List<String> weekSignedTimes = []; // 本周已签到日期
   static bool isSignedToday = false; // 今日是否已签到
@@ -52,8 +53,8 @@ class Global {
     initUserInfo();
     initMintInfo();
     initMineInfo();
-    updateGold();
     initSignHistory();
+    updateGold();
     initTaskList();
   }
 
@@ -98,6 +99,7 @@ class Global {
   }
   // 初始化签到信息
   static initSignHistory() {
+    goldSigned = _prefs.getInt('goldSigned') ?? 0;
     DateTime now = DateTime.now();
     int curYear = now.year; // 今年
     int curMonth = now.month; // 当月
@@ -264,7 +266,7 @@ class Global {
     historyTimes.forEach((String time) {
       _goldTotal += _prefs.getInt('gold_$time') ?? 0;
     });
-    goldTotal = _goldTotal + goldMined;
+    goldTotal = _goldTotal + goldMined + goldSigned;
   }
 
 
@@ -277,9 +279,19 @@ class Global {
       _prefs.setStringList('sign_times', [...historyTimes, today]);
 
       // 连续7天签到奖励，前5日奖励每日200，第6日300，第7日500金币
-      // if (weekSignedTimes.length == 5) {}
+      int gold = 200;
+      if (weekSignedTimes.length == 5) {
+        gold = 300;
+      } else if (weekSignedTimes.length == 6) {
+        gold = 500;
+      }
+      goldSigned += gold;
+      goldBalance += gold;
+      _prefs.setInt('goldSigned', goldSigned);
+      _prefs.setInt('goldBalance', goldBalance);
     }
     initSignHistory();
+    updateGold();
   }
   // 领取评价奖励
   static receiveRateAward() {
@@ -328,5 +340,11 @@ class Global {
     increaseExp(1000);
     isClaimPeakAchiever = true;
     _prefs.setBool('isClaimPeakAchiever', true);
+  }
+
+
+  // 清理数据
+  static clear() {
+    _prefs.clear();
   }
 }

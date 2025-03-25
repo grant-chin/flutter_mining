@@ -1,13 +1,16 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_mining/common/Global.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 int weekday = DateTime.now().weekday;
 int get _level => Global.level; // 等级
 List<String> get claimedArr => Global.weekSignedTimes; // 周签到时间
 bool get isSignedToday => Global.isSignedToday; // 今日是否已签到
 bool get isRate => Global.isRate; // 是否评价
+bool successRated = false; // 是否成功完成评价
 bool get isShared => Global.isShared; // 是否分享
+bool successShared = false; // 是否成功完成分享
 int get mintTimes => Global.mintTimes; // 已铸造次数
 bool get isClaimActivePioneer => Global.isClaimActivePioneer; // 是否已领取铸造先锋奖励
 bool get isClaimGoalAchiever => Global.isClaimGoalAchiever; // 是否已领取NFT铸造成功成就
@@ -15,6 +18,23 @@ bool get isClaimPowerExpert => Global.isClaimPowerExpert; // 是否已领取铸�
 bool get isClaimGoalMaster => Global.isClaimGoalMaster; // 是否已领取铸造专家成就
 bool get isClaimVitalityChampion => Global.isClaimVitalityChampion; // 是否已领取铸造冠军成就
 bool get isClaimPeakAchiever => Global.isClaimPeakAchiever; // 是否已领取巅峰成就
+
+List<String> _marketUrls = [
+  "vivomarket://details?id=your_package_name&th_name=need_comment",
+  "oaps://mk/developer/comment?pkg=your_package_name",
+  "appmarket://details?id=your_package_name",
+  "mimarket://details?id=your_package_name",
+  "itms-apps://itunes.apple.com/app/idyour_package_id?action=write-review",
+];
+  
+  Future<String?> _getLaunchUrl() async {
+    for (String item in _marketUrls) {
+      if (await canLaunchUrl(Uri.parse(item))) {
+        return item;
+      }
+    }
+    return null;
+  }
 
 class TasksPage extends StatefulWidget {
   const TasksPage({super.key});
@@ -24,6 +44,72 @@ class TasksPage extends StatefulWidget {
 }
 
 class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMixin {
+  @override
+  void initState() {
+    super.initState();
+    AppLifecycleListener(
+      onStateChange: _onStateChanged,
+    );
+  }
+  void _onStateChanged(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.detached: () {};
+      case AppLifecycleState.resumed: _onResumed();
+      case AppLifecycleState.inactive: () {};
+      case AppLifecycleState.hidden: () {};
+      case AppLifecycleState.paused: () {};
+    }
+  }
+  void _onResumed() {
+    if (successRated) {
+      _showDialog(1, 'Thanks for Your Feedback!', 50, Global.receiveRateAward);
+      setState(() {
+        successRated = false;
+      });
+    }
+    if (successShared) {
+      _showDialog(2, 'Speread the Joy!', 25, Global.receiveShareAward);
+      setState(() {
+        successShared = false;
+      });
+    }
+  }
+
+
+  // 评分按钮点击事件调用：
+  Future<void> _toRate() async {
+    String url = await _getLaunchUrl() ?? '';
+    if(url != '') {
+      setState(() {
+        successRated = true;
+      });
+      await launchUrl(Uri.parse(url));
+    } else {
+      showDialog(
+        context: context,
+        useSafeArea: false,
+        builder: (_) => Stack(
+          alignment: Alignment.center,
+          children: [
+            Positioned(
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                decoration: BoxDecoration(
+                  color: Color.fromRGBO(15, 15, 18, 1),
+                  borderRadius: BorderRadius.circular(16)
+                ),
+                child: Text('Failed to Retrieve', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)),
+              )
+            )
+          ],
+        )
+      );
+    }
+  }
+  // 分享
+  _toShare() {
+  }
+  // 领取奖励弹窗
   _showDialog(type, subtitle, exp, claimFunc) {
     final imgs = {
       1: 'assets/images/tasks/dialog_title_rating_complete.png', // 评价
@@ -232,20 +318,16 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                         'assets/images/tasks/icon_thumb.png',
                         'Rate us',
                         'Rating successful +50',
-                        isRate ? 'Claimed' : 'Claim',
-                        () {
-                          _showDialog(1, 'Thanks for Your Feedback!', 50, Global.receiveRateAward);
-                        }
+                        isRate ? 'Claimed' : 'Rate',
+                        _toRate
                       ),
                       // 分享
                       taskItem(
                         'assets/images/tasks/icon_clap.png',
                         'Invite friends',
                         'Successfully shared once +25',
-                        isShared ? 'Claimed' : 'Claim',
-                        () {
-                          _showDialog(2, 'Speread the Joy!', 25, Global.receiveShareAward);
-                        }
+                        isShared ? 'Claimed' : 'Share',
+                        _toShare
                       ),
                       // 3次铸造成功成就
                       taskItem(
@@ -353,7 +435,7 @@ Widget taskItem(img, title, desc, btnText, func) {
             backgroundColor: Color.fromRGBO(112, 21, 239, 1),
             disabledForegroundColor: btnText == 'Claimed' ? Colors.white : Color.fromRGBO(249, 249, 249, 0.2),
             disabledBackgroundColor: btnText == 'Claimed' ? Color.fromRGBO(112, 21, 239, 0.3) : Color.fromRGBO(35, 36, 41, 1),
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.symmetric(horizontal: 12),
             side: BorderSide(color: btnText == 'Claimed' ? Color.fromRGBO(112, 21, 239, 1) : Colors.transparent),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           ),

@@ -12,7 +12,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   int currentIndex = 1;
 
   /// Tab 改变
@@ -28,18 +27,16 @@ class _MyHomePageState extends State<MyHomePage> {
     return Image.asset(icon, width: 24, height: 24);
   }
 
-  final List<Widget> bottomBarViews = [
-    ItemPage(),
-    MinePage(),
-    TasksPage(),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(
         index: currentIndex,
-        children: bottomBarViews,
+        children: [
+          ItemPage(),
+          MinePage(toTab: onTabChanged),
+          TasksPage(),
+        ],
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(border: Border(top: BorderSide(color: Colors.black54, width: 0.3))),

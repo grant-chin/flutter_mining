@@ -278,7 +278,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                             ),
                             onPressed: () {
-                              Navigator.of(context).pop();
+                              Navigator.pop(context, 'item');
                             },
                             child: Text('Mint', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                           ),
