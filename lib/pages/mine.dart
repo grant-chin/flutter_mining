@@ -182,7 +182,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
       shakeRange: 0.2,
       //执行抖动动画的子Widget
       child: Listener(
-        child: Image.asset('assets/icons/icon_simu.png', width: isClick ? 200 : 206),
+        child: Image.asset('assets/icons/icon_simu.png', width: isClick ? 195 : 200),
         onPointerDown: (event) {
           setState(() {
             isClick = true;
@@ -441,14 +441,12 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
               ],
             )
           ),
-          Expanded(child: Container(
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.only(top: 16),
+          Expanded(
             child: Stack(
-              alignment: Alignment.center , //指定未定位或部分定位widget的对齐方式
+              alignment: Alignment.center,
               children: <Widget>[
-                Image.asset('assets/images/mine/mine_bg.png', width: 400),
-                Image.asset('assets/images/mine/mine_ring_bg.png', width: 220),
+                Image.asset('assets/images/mine/mine_bg.png', width: 390),
+                Image.asset('assets/images/mine/mine_ring_bg.png', width: 214),
                 buildShakeAnimationWidget(),
                 SizedBox(
                   width: 280,
@@ -456,11 +454,11 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                   child: strokeRing(context),
                 ),
                 Positioned(
-                  top: 0,
+                  top: 16,
                   child: Text('Pool Mining', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold))
                 ),
                 Positioned(
-                  top: 2,
+                  top: 18,
                   right: 16,
                   child: InkWell(
                     onTap: _showRuleDialog,
@@ -468,7 +466,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                   )
                 ),
                 Positioned(
-                  top: 48,
+                  top: 60,
                   child: Container(
                     width: MediaQuery.of(context).size.width - 28,
                     height: 64,
@@ -646,8 +644,8 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                   )
                 )
               ],
-            ),
-          ))
+            )
+          )
         ],
       ),
     );
@@ -660,38 +658,38 @@ Widget strokeRing(context) {
     alignment: Alignment.center,
     clipBehavior: Clip.none,
     children: [
-      Positioned(top: 5, child: Opacity(opacity: strokeIndex > 0 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_1.png', scale: 3))),
-      Positioned(top: 6, right: 106, child: Opacity(opacity: strokeIndex > 1 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_2.png', scale: 3))),
-      Positioned(top: 12, right: 82, child: Opacity(opacity: strokeIndex > 2 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_3.png', scale: 3))),
-      Positioned(top: 23, right: 59, child: Opacity(opacity: strokeIndex > 3 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_4.png', scale: 3))),
-      Positioned(top: 39, right: 39, child: Opacity(opacity: strokeIndex > 4 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_5.png', scale: 3))),
-      Positioned(top: 58, right: 24, child: Opacity(opacity: strokeIndex > 5 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_6.png', scale: 3))),
-      Positioned(top: 81, right: 12, child: Opacity(opacity: strokeIndex > 6 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_7.png', scale: 3))),
-      Positioned(top: 106, right: 6, child: Opacity(opacity: strokeIndex > 7 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_8.png', scale: 3))),
-      Positioned(top: 133, right: 5, child: Opacity(opacity: strokeIndex > 8 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_9.png', scale: 3))),
-      Positioned(bottom: 106, right: 6, child: Opacity(opacity: strokeIndex > 9 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_10.png', scale: 3))),
-      Positioned(bottom: 81, right: 12, child: Opacity(opacity: strokeIndex > 10 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_11.png', scale: 3))),
-      Positioned(bottom: 58, right: 23, child: Opacity(opacity: strokeIndex > 11 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_12.png', scale: 3))),
-      Positioned(bottom: 39, right: 39, child: Opacity(opacity: strokeIndex > 12 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_13.png', scale: 3))),
-      Positioned(bottom: 23, right: 59, child: Opacity(opacity: strokeIndex > 13 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_14.png', scale: 3))),
-      Positioned(bottom: 12, right: 82, child: Opacity(opacity: strokeIndex > 14 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_15.png', scale: 3))),
-      Positioned(bottom: 6, right: 106, child: Opacity(opacity: strokeIndex > 15 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_16.png', scale: 3))),
-      Positioned(bottom: 5, child: Opacity(opacity: strokeIndex > 16 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_17.png', scale: 3))),
-      Positioned(bottom: 6, left: 106, child: Opacity(opacity: strokeIndex > 17 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_18.png', scale: 3))),
-      Positioned(bottom: 12, left: 82, child: Opacity(opacity: strokeIndex > 18 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_19.png', scale: 3))),
-      Positioned(bottom: 23, left: 59, child: Opacity(opacity: strokeIndex > 19 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_20.png', scale: 3))),
-      Positioned(bottom: 39, left: 39, child: Opacity(opacity: strokeIndex > 20 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_21.png', scale: 3))),
-      Positioned(bottom: 58, left: 23, child: Opacity(opacity: strokeIndex > 21 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_22.png', scale: 3))),
-      Positioned(bottom: 81, left: 12, child: Opacity(opacity: strokeIndex > 22 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_23.png', scale: 3))),
-      Positioned(bottom: 106, left: 6, child: Opacity(opacity: strokeIndex > 23 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_24.png', scale: 3))),
-      Positioned(top: 133, left: 5, child: Opacity(opacity: strokeIndex > 24 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_25.png', scale: 3))),
-      Positioned(top: 106, left: 6, child: Opacity(opacity: strokeIndex > 25 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_26.png', scale: 3))),
-      Positioned(top: 81, left: 12, child: Opacity(opacity: strokeIndex > 26 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_27.png', scale: 3))),
-      Positioned(top: 58, left: 23, child: Opacity(opacity: strokeIndex > 27 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_28.png', scale: 3))),
-      Positioned(top: 39, left: 39, child: Opacity(opacity: strokeIndex > 28 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_29.png', scale: 3))),
-      Positioned(top: 23, left: 59, child: Opacity(opacity: strokeIndex > 29 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_30.png', scale: 3))),
-      Positioned(top: 12, left: 82, child: Opacity(opacity: strokeIndex > 30 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_31.png', scale: 3))),
-      Positioned(top: 6, left: 106, child: Opacity(opacity: strokeIndex > 31 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_32.png', scale: 3)))
+      Positioned(top: 8, child: Opacity(opacity: strokeIndex > 0 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_1.png', scale: 3))),
+      Positioned(top: 9, right: 106, child: Opacity(opacity: strokeIndex > 1 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_2.png', scale: 3))),
+      Positioned(top: 15, right: 83, child: Opacity(opacity: strokeIndex > 2 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_3.png', scale: 3))),
+      Positioned(top: 28, right: 60, child: Opacity(opacity: strokeIndex > 3 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_4.png', scale: 3))),
+      Positioned(top: 42, right: 42, child: Opacity(opacity: strokeIndex > 4 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_5.png', scale: 3))),
+      Positioned(top: 60, right: 28, child: Opacity(opacity: strokeIndex > 5 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_6.png', scale: 3))),
+      Positioned(top: 83, right: 15, child: Opacity(opacity: strokeIndex > 6 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_7.png', scale: 3))),
+      Positioned(top: 106, right: 9, child: Opacity(opacity: strokeIndex > 7 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_8.png', scale: 3))),
+      Positioned(right: 8, child: Opacity(opacity: strokeIndex > 8 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_9.png', scale: 3))),
+      Positioned(bottom: 106, right: 9, child: Opacity(opacity: strokeIndex > 9 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_10.png', scale: 3))),
+      Positioned(bottom: 83, right: 15, child: Opacity(opacity: strokeIndex > 10 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_11.png', scale: 3))),
+      Positioned(bottom: 60, right: 28, child: Opacity(opacity: strokeIndex > 11 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_12.png', scale: 3))),
+      Positioned(bottom: 42, right: 42, child: Opacity(opacity: strokeIndex > 12 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_13.png', scale: 3))),
+      Positioned(bottom: 28, right: 60, child: Opacity(opacity: strokeIndex > 13 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_14.png', scale: 3))),
+      Positioned(bottom: 15, right: 83, child: Opacity(opacity: strokeIndex > 14 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_15.png', scale: 3))),
+      Positioned(bottom: 9, right: 106, child: Opacity(opacity: strokeIndex > 15 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_16.png', scale: 3))),
+      Positioned(bottom: 8, child: Opacity(opacity: strokeIndex > 16 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_17.png', scale: 3))),
+      Positioned(bottom: 9, left: 106, child: Opacity(opacity: strokeIndex > 17 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_18.png', scale: 3))),
+      Positioned(bottom: 15, left: 83, child: Opacity(opacity: strokeIndex > 18 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_19.png', scale: 3))),
+      Positioned(bottom: 28, left: 60, child: Opacity(opacity: strokeIndex > 19 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_20.png', scale: 3))),
+      Positioned(bottom: 42, left: 42, child: Opacity(opacity: strokeIndex > 20 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_21.png', scale: 3))),
+      Positioned(bottom: 60, left: 28, child: Opacity(opacity: strokeIndex > 21 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_22.png', scale: 3))),
+      Positioned(bottom: 83, left: 15, child: Opacity(opacity: strokeIndex > 22 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_23.png', scale: 3))),
+      Positioned(bottom: 106, left: 9, child: Opacity(opacity: strokeIndex > 23 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_24.png', scale: 3))),
+      Positioned(left: 8, child: Opacity(opacity: strokeIndex > 24 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_25.png', scale: 3))),
+      Positioned(top: 106, left: 9, child: Opacity(opacity: strokeIndex > 25 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_26.png', scale: 3))),
+      Positioned(top: 83, left: 15, child: Opacity(opacity: strokeIndex > 26 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_27.png', scale: 3))),
+      Positioned(top: 60, left: 28, child: Opacity(opacity: strokeIndex > 27 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_28.png', scale: 3))),
+      Positioned(top: 42, left: 42, child: Opacity(opacity: strokeIndex > 28 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_29.png', scale: 3))),
+      Positioned(top: 28, left: 60, child: Opacity(opacity: strokeIndex > 29 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_30.png', scale: 3))),
+      Positioned(top: 15, left: 83, child: Opacity(opacity: strokeIndex > 30 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_31.png', scale: 3))),
+      Positioned(top: 9, left: 106, child: Opacity(opacity: strokeIndex > 31 ? 1 : 0, child: Image.asset('assets/images/mine/stroke_32.png', scale: 3)))
     ],
   );
 }

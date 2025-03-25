@@ -2,22 +2,24 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_mining/common/Global.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share_extend/share_extend.dart';
 
 int weekday = DateTime.now().weekday;
 int get _level => Global.level; // 等级
 List<String> get claimedArr => Global.weekSignedTimes; // 周签到时间
-bool get isSignedToday => Global.isSignedToday; // 今日是否已签到
-bool get isRate => Global.isRate; // 是否评价
+bool isSignedToday = Global.isSignedToday; // 今日是否已签到
+bool isRate = Global.isRate; // 是否评价
 bool successRated = false; // 是否成功完成评价
-bool get isShared => Global.isShared; // 是否分享
+bool isShared = Global.isShared; // 是否分享
 bool successShared = false; // 是否成功完成分享
 int get mintTimes => Global.mintTimes; // 已铸造次数
-bool get isClaimActivePioneer => Global.isClaimActivePioneer; // 是否已领取铸造先锋奖励
-bool get isClaimGoalAchiever => Global.isClaimGoalAchiever; // 是否已领取NFT铸造成功成就
-bool get isClaimPowerExpert => Global.isClaimPowerExpert; // 是否已领取铸造专家成就
-bool get isClaimGoalMaster => Global.isClaimGoalMaster; // 是否已领取铸造专家成就
-bool get isClaimVitalityChampion => Global.isClaimVitalityChampion; // 是否已领取铸造冠军成就
-bool get isClaimPeakAchiever => Global.isClaimPeakAchiever; // 是否已领取巅峰成就
+List<String> get nftList => Global.nftList; // 已经获取的NFT列表
+bool isClaimActivePioneer = Global.isClaimActivePioneer; // 是否已领取铸造先锋奖励
+bool isClaimGoalAchiever = Global.isClaimGoalAchiever; // 是否已领取NFT铸造成功成就
+bool isClaimPowerExpert = Global.isClaimPowerExpert; // 是否已领取铸造专家成就
+bool isClaimGoalMaster = Global.isClaimGoalMaster; // 是否已领取铸造专家成就
+bool isClaimVitalityChampion = Global.isClaimVitalityChampion; // 是否已领取铸造冠军成就
+bool isClaimPeakAchiever = Global.isClaimPeakAchiever; // 是否已领取巅峰成就
 
 List<String> _marketUrls = [
   "vivomarket://details?id=your_package_name&th_name=need_comment",
@@ -62,15 +64,17 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
   }
   void _onResumed() {
     if (successRated) {
-      _showDialog(1, 'Thanks for Your Feedback!', 50, Global.receiveRateAward);
-      setState(() {
-        successRated = false;
+      setState(() => successRated = false);
+      _showDialog(1, 'Thanks for Your Feedback!', 50, () {
+        Global.receiveRateAward();
+        setState(() => isRate = Global.isRate);
       });
     }
     if (successShared) {
-      _showDialog(2, 'Speread the Joy!', 25, Global.receiveShareAward);
-      setState(() {
-        successShared = false;
+      setState(() => successShared = false);
+      _showDialog(2, 'Speread the Joy!', 25, () {
+        Global.receiveShareAward();
+        setState(() => isShared = Global.isShared);
       });
     }
   }
@@ -108,6 +112,10 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
   }
   // 分享
   _toShare() {
+    setState(() {
+      successShared = true;
+    });
+    ShareExtend.share("🚀 Earn Gold Together! 🚀Join me on SimuPool - the smartest way to mine crypto effortlessly! 💎", "text");
   }
   // 领取奖励弹窗
   _showDialog(type, subtitle, exp, claimFunc) {
@@ -300,7 +308,10 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                                 borderRadius: BorderRadius.circular(20)
                               ),
                             ),
-                            onPressed: isSignedToday ? null : Global.onSignToday,
+                            onPressed: isSignedToday ? null : () {
+                              Global.onSignToday();
+                              setState(() => isSignedToday = Global.isSignedToday);
+                            },
                             child: Text(isSignedToday ? 'Claimed' : 'Claim', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                           )
                         ],
@@ -336,7 +347,10 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                         'Mining 3 times +200',
                         isClaimActivePioneer ? 'Claimed' : 'Claim',
                         mintTimes > 2 ? () {
-                          _showDialog(3, 'Mining Rewards Unlocked!', 200, Global.receiveMineAward_3);
+                          _showDialog(3, 'Mining Rewards Unlocked!', 200, () {
+                            Global.receiveMineAward_3();
+                            setState(() => isClaimActivePioneer = Global.isClaimActivePioneer);
+                          });
                         } : null
                       ),
                       // 首次获得NFT成就
@@ -345,9 +359,12 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                         'Goal achiever',
                         'Complete 1 NFT minting +500',
                         isClaimGoalAchiever ? 'Claimed' : 'Claim',
-                        () {
-                          _showDialog(2, 'Mint Complete! Welcome to the Future!', 500, Global.receiveNFTAward);
-                        }
+                        nftList.isNotEmpty ? () {
+                          _showDialog(2, 'Mint Complete! Welcome to the Future!', 500, () {
+                            Global.receiveNFTAward();
+                            setState(() => isClaimGoalAchiever = Global.isClaimGoalAchiever);
+                          });
+                        } : null
                       ),
                       // 5次铸造成功成就
                       taskItem(
@@ -356,7 +373,10 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                         'Mining 5 times +600',
                         isClaimPowerExpert ? 'Claimed' : 'Claim',
                         mintTimes > 5 ? () {
-                          _showDialog(2, 'Mining Rewards Unlocked!', 600, Global.receiveMineAward_5);
+                          _showDialog(2, 'Mining Rewards Unlocked!', 600, () {
+                            Global.receiveMineAward_5();
+                            setState(() => isClaimPowerExpert = Global.isClaimPowerExpert);
+                          });
                         } : null
                       ),
                       // 10级成就
@@ -366,7 +386,10 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                         'Reach Level 10 +1000',
                         isClaimGoalMaster ? 'Claimed' : 'Claim',
                         _level >= 10 ? () {
-                          _showDialog(2, 'Level 10 Unlocked! You’re on Fire!', 1000, Global.receiveLevelAward_10);
+                          _showDialog(2, 'Level 10 Unlocked! You’re on Fire!', 1000, () {
+                            Global.receiveLevelAward_10();
+                            setState(() => isClaimGoalMaster = Global.isClaimGoalMaster);
+                          });
                         } : null
                       ),
                       // 20次铸造成功成就
@@ -376,7 +399,10 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                         'Mining 20 times +2000',
                         isClaimVitalityChampion ? 'Claimed' : 'Claim',
                         mintTimes > 20 ? () {
-                          _showDialog(2, 'Mining Rewards Unlocked!', 2000, Global.receiveMineAward_20);
+                          _showDialog(2, 'Mining Rewards Unlocked!', 2000, () {
+                            Global.receiveMineAward_20();
+                            setState(() => isClaimVitalityChampion = Global.isClaimVitalityChampion);
+                          });
                         } : null
                       ),
                       // 50级成就
@@ -386,7 +412,10 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                         'Reach Level 50 +5000',
                         isClaimPeakAchiever ? 'Claimed' : 'Claim',
                         _level >= 50 ? () {
-                          _showDialog(2, 'Level 50 Unlocked! You’re on Fire!', 5000, Global.receiveLevelAward_50);
+                          _showDialog(2, 'Level 50 Unlocked! You’re on Fire!', 5000, () {
+                            Global.receiveLevelAward_50();
+                            setState(() => isClaimPeakAchiever = Global.isClaimPeakAchiever);
+                          });
                         } : null
                       ),
                     ],

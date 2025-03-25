@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mining/common/Global.dart';
 
+
 class SettingView extends StatelessWidget {
   const SettingView({super.key});
 
@@ -22,70 +23,9 @@ class SettingView extends StatelessWidget {
           ),
           Column(
             children: [
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: 58,
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                ),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    alignment: Alignment.centerLeft,
-                    overlayColor: Colors.white,
-                    shadowColor: Colors.transparent,
-                    elevation: 0, // 阴影
-                    backgroundColor: Colors.transparent,
-                    shape: BeveledRectangleBorder(
-                      borderRadius: BorderRadius.circular(0)
-                    )
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Policy privacy', style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold
-                      )),
-                      Icon(Icons.arrow_forward_ios, color: Colors.white,)
-                    ],
-                  ),
-                  onPressed: () {
-                    Global.clear();
-                  }
-                ),
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: 58,
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                ),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    alignment: Alignment.centerLeft,
-                    overlayColor: Colors.white,
-                    shadowColor: Colors.transparent,
-                    elevation: 0, // 阴影
-                    backgroundColor: Colors.transparent,
-                    shape: BeveledRectangleBorder(
-                      borderRadius: BorderRadius.circular(0)
-                    )
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Terms of service', style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold
-                      )),
-                      Icon(Icons.arrow_forward_ios, color: Colors.white,)
-                    ],
-                  ),
-                  onPressed: () {}
-                ),
-              ),
+              linkItem('Policy privacy', (){}),
+              linkItem('Terms of service', (){}),
+              linkItem('Clear Cache', (){ Global.clear(); }),
             ],
           ),
           Spacer(),
@@ -95,4 +35,35 @@ class SettingView extends StatelessWidget {
       ),
 		);
 	}
+}
+
+Widget linkItem(text, func) {
+  return Container(
+    height: 58,
+    decoration: BoxDecoration(color: Colors.black),
+    child: ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        alignment: Alignment.centerLeft,
+        overlayColor: Colors.white,
+        shadowColor: Colors.transparent,
+        elevation: 0, // 阴影
+        backgroundColor: Colors.transparent,
+        shape: BeveledRectangleBorder(
+          borderRadius: BorderRadius.circular(0)
+        )
+      ),
+      onPressed: func,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(text, style: TextStyle(
+            color: Colors.white,
+            fontSize: 14,
+            fontWeight: FontWeight.bold
+          )),
+          Icon(Icons.arrow_forward_ios, color: Colors.white)
+        ],
+      ),
+    ),
+  );
 }

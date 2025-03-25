@@ -39,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       bottomNavigationBar: Container(
-        decoration: BoxDecoration(border: Border(top: BorderSide(color: Colors.black54, width: 0.3))),
+        decoration: BoxDecoration(border: Border(top: BorderSide(color: Colors.black87, width: 0.3))),
         child: Theme(
           data: ThemeData(splashColor: Colors.transparent),
           child: BottomNavigationBar(

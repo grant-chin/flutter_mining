@@ -77,7 +77,7 @@ class Global {
   // 初始化挖矿信息
   static initMineInfo() {
     goldMined = _prefs.getInt('goldMined') ?? 0;
-    goldBalance = _prefs.getInt('goldBalance') ?? 0;
+    goldBalance = _prefs.getInt('goldBalance') ?? 1000000;
     isMining = _prefs.getBool('isMining') ?? false;
     remainMineTime = _prefs.getInt('remainMineTime') ?? 0;
     remainStartMineTime = _prefs.getInt('remainStartMineTime') ?? 0;
@@ -230,6 +230,7 @@ class Global {
   static increaseExp(int value) {
     exp = (exp + value) % 200;
     level += (exp + value) ~/ 200;
+    levelEff = level * 20;
     _prefs.setInt('exp', exp);
     _prefs.setInt('level', level);
   }
