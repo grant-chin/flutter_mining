@@ -25,7 +25,7 @@ class SettingView extends StatelessWidget {
             children: [
               linkItem('Policy privacy', (){}),
               linkItem('Terms of service', (){}),
-              linkItem('Clear Cache', (){ Global.clear(); }),
+              // linkItem('Clear Cache', (){ Global.clear(); }),
             ],
           ),
           Spacer(),

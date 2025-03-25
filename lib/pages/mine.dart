@@ -4,7 +4,7 @@ import 'package:flutter_mining/common/Global.dart';
 import 'package:shake_animation_widget/shake_animation_widget.dart';
 import 'package:animate_do/animate_do.dart';
 
-String get avator => Global.avator; // 头像
+String avator = Global.avator; // 头像
 int get _level => Global.level; // 等级
 int get _exp => Global.exp; // 经验值
 int get goldYesterday => Global.goldYesterday;
@@ -240,6 +240,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                 InkWell(
                   onTap: () {
                     Navigator.pushNamed(context, 'profile').then((value) {
+                      setState(() => avator = Global.avator);
                       if (value == 'item') {
                         widget.toTab(0);
                       }
