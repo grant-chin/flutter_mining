@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mining/common/Global.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+// import 'package:dio/dio.dart';
+import 'package:flutter/rendering.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+// import 'package:path_provider/path_provider.dart';
+
 
 String avator = Global.avator; // 头像
 int get _level => Global.level; // 等级
@@ -18,6 +25,8 @@ class ProfileView extends StatefulWidget {
 }
 
 class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStateMixin {
+  GlobalKey _globalKey = GlobalKey();
+
 	@override
 	Widget build(BuildContext context) {
 		return Scaffold(
@@ -324,7 +333,10 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(nftList[index], fit: BoxFit.cover)
+                      child: RepaintBoundary(
+                        key: _globalKey,
+                        child: Image.asset(nftList[index], fit: BoxFit.cover)
+                      )
                     )
                   ),
                   SizedBox(height: 16),
@@ -367,31 +379,32 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                             ),
                           )
                         ),
-                        // SizedBox(width: 12),
-                        // Container(
-                        //   width: 40,
-                        //   height: 40,
-                        //   decoration: BoxDecoration(
-                        //     borderRadius: BorderRadius.circular(8),
-                        //     color: Color.fromRGBO(35, 36, 41, 1),
-                        //     border: Border.all(color: Color.fromRGBO(53, 54, 60, 1), width: 1)
-                        //   ),
-                        //   child: ElevatedButton(
-                        //     style: ElevatedButton.styleFrom(
-                        //       overlayColor: Colors.white,
-                        //       shadowColor: Colors.transparent,
-                        //       padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                        //       elevation: 0, // 阴影
-                        //       backgroundColor: Colors.transparent,
-                        //       shape: BeveledRectangleBorder(
-                        //         borderRadius: BorderRadius.circular(4)
-                        //       )
-                        //     ),
-                        //     child: Image.asset('assets/icons/icon_download.png', width: 20,),
-                        //     onPressed: () {
-                        //     }
-                        //   ),
-                        // ),
+                        SizedBox(width: 12),
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Color.fromRGBO(35, 36, 41, 1),
+                            border: Border.all(color: Color.fromRGBO(53, 54, 60, 1), width: 1)
+                          ),
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              overlayColor: Colors.white,
+                              shadowColor: Colors.transparent,
+                              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                              elevation: 0, // 阴影
+                              backgroundColor: Colors.transparent,
+                              shape: BeveledRectangleBorder(
+                                borderRadius: BorderRadius.circular(4)
+                              )
+                            ),
+                            child: Image.asset('assets/icons/icon_download.png', width: 20,),
+                            onPressed: () {
+                              _saveLocalImage();
+                            }
+                          ),
+                        ),
                       ],
                     )
                   ),
@@ -402,5 +415,39 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
         },
       ),
     );
+  }
+
+  _saveLocalImage() async {
+    RenderRepaintBoundary boundary = _globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+    ui.Image image = await boundary.toImage(pixelRatio: ui.window.devicePixelRatio);
+    ByteData? byteData = await (image.toByteData(format: ui.ImageByteFormat.png));
+    if (byteData != null) {
+      final result = await ImageGallerySaver.saveImage(byteData.buffer.asUint8List());
+      String statusText = result['isSuccess'] ? 'Successfully' : 'Failed';
+      showDialog(
+        context: context,
+        useSafeArea: false,
+        builder: (_) => Stack(
+          alignment: Alignment.center,
+          children: [
+            Positioned(
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                decoration: BoxDecoration(
+                  color: Color.fromRGBO(15, 15, 18, 1),
+                  borderRadius: BorderRadius.circular(16)
+                ),
+                child: Text('Saved to Album $statusText', style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  decoration: TextDecoration.none
+                )),
+              )
+            )
+          ],
+        )
+      );
+    }
   }
 }

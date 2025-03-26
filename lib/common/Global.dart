@@ -77,7 +77,7 @@ class Global {
   // 初始化挖矿信息
   static initMineInfo() {
     goldMined = _prefs.getInt('goldMined') ?? 0;
-    goldBalance = _prefs.getInt('goldBalance') ?? 1000000;
+    goldBalance = _prefs.getInt('goldBalance') ?? 0;
     isMining = _prefs.getBool('isMining') ?? false;
     remainMineTime = _prefs.getInt('remainMineTime') ?? 0;
     remainStartMineTime = _prefs.getInt('remainStartMineTime') ?? 0;
@@ -263,11 +263,11 @@ class Global {
     goldToday = _prefs.getInt('gold_$today') ?? 0;
     goldDaily = _prefs.getInt('gold_$today') ?? 0;
     List<String> historyTimes = _prefs.getStringList('mine_times') ?? [];
-    int _goldTotal = 0;
+    int newGoldTotal = 0;
     historyTimes.forEach((String time) {
-      _goldTotal += _prefs.getInt('gold_$time') ?? 0;
+      newGoldTotal += _prefs.getInt('gold_$time') ?? 0;
     });
-    goldTotal = _goldTotal + goldMined + goldSigned;
+    goldTotal = newGoldTotal + goldMined + goldSigned;
   }
 
 
