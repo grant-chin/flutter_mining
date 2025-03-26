@@ -21,6 +21,7 @@ class Global {
   static bool isMining = false; // 是否开启自动挖矿
   static bool isMined = false; // 是否自动挖矿时间结束
   static String startMineTime = ''; // 开始自动挖矿时间
+  static String endMineTime = ''; // 结束自动挖矿时间
   static int remainMineTime = 28800; // 剩余挖矿时间-默认8小时/28800秒
   static int remainStartMineTime = 0; // 开始自动挖矿时剩余挖矿时间
   static int minedCoins = 0; // 自动挖矿金币收益
@@ -79,7 +80,7 @@ class Global {
     goldMined = _prefs.getInt('goldMined') ?? 0;
     goldBalance = _prefs.getInt('goldBalance') ?? 0;
     isMining = _prefs.getBool('isMining') ?? false;
-    remainMineTime = _prefs.getInt('remainMineTime') ?? 0;
+    remainMineTime = _prefs.getInt('remainMineTime') ?? 28800;
     remainStartMineTime = _prefs.getInt('remainStartMineTime') ?? 0;
     minedCoins = _prefs.getInt('minedCoins') ?? 0;
     if (isMining) {
@@ -94,8 +95,20 @@ class Global {
         remainMineTime = 0;
         endMine();
       }
-      _prefs.setInt('remainMineTime', remainMineTime);
+    } else {
+      // 挖矿时间零点刷新8h
+      String endTime = _prefs.getString('endMineTime') ?? '';
+      if (endTime != '') {
+        String now = DateFormat('yyyy-MM-dd').format(DateTime.now());
+        DateTime zeroTime = DateTime.parse('$now 00:00:00');
+        if (DateTime.parse(endTime).isBefore(zeroTime)) {
+          remainMineTime = 28800;
+        }
+      } else {
+        remainMineTime = 28800;
+      }
     }
+    _prefs.setInt('remainMineTime', remainMineTime);
   }
   // 初始化签到信息
   static initSignHistory() {
@@ -169,6 +182,9 @@ class Global {
     isMined = false;
     _prefs.setBool('isMining', false);
     _prefs.setString('startMineTime', '');
+    DateTime now = DateTime.now();
+    endMineTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+    _prefs.setString('endMineTime', endMineTime);
     updateGold();
   }
   // 减少挖矿时间

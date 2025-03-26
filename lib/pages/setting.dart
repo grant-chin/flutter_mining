@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mining/common/Global.dart';
+// import 'package:flutter_mining/common/Global.dart';
 
 
 class SettingView extends StatelessWidget {

@@ -3,10 +3,8 @@ import 'package:flutter_mining/common/Global.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-// import 'package:dio/dio.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
-// import 'package:path_provider/path_provider.dart';
 
 
 String avator = Global.avator; // 头像
