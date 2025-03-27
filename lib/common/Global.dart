@@ -7,7 +7,7 @@ var formater = DateFormat('yyyy-MM-dd');
 
 class Global {
   static late SharedPreferences _prefs;
-  static String avator = 'assets/images/avator/lion.jpeg';
+  static String avator = 'assets/images/avator/default.png';
   static int level = 1; // 等级
   static int levelEff = 20; // 等级收益率-乘法(等级*20)
   static int exp = 0; // 经验
@@ -61,7 +61,7 @@ class Global {
 
   // 初始化账号信息
   static initUserInfo() {
-    avator = _prefs.getString('avator') ?? 'assets/images/avator/lion.jpeg';
+    avator = _prefs.getString('avator') ?? 'assets/images/avator/default.png';
     level = _prefs.getInt('level') ?? 1;
     levelEff = level * 20;
     exp = _prefs.getInt('exp') ?? 0;

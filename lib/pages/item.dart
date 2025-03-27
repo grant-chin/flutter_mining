@@ -40,6 +40,7 @@ class ItemPage extends StatefulWidget {
 class _ItemPageState extends State<ItemPage> with SingleTickerProviderStateMixin {
   // 选择铸造道具
   _setMiner(name) {
+    if (isMinting) return;
     setState(() {
       if (miner != name) {
         miner = name;
