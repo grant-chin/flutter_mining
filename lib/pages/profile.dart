@@ -4,7 +4,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+// import 'package:image_gallery_saver/image_gallery_saver.dart';
 
 
 String avator = Global.avator; // 头像
@@ -377,32 +377,32 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                             ),
                           )
                         ),
-                        SizedBox(width: 12),
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: Color.fromRGBO(35, 36, 41, 1),
-                            border: Border.all(color: Color.fromRGBO(53, 54, 60, 1), width: 1)
-                          ),
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              overlayColor: Colors.white,
-                              shadowColor: Colors.transparent,
-                              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                              elevation: 0, // 阴影
-                              backgroundColor: Colors.transparent,
-                              shape: BeveledRectangleBorder(
-                                borderRadius: BorderRadius.circular(4)
-                              )
-                            ),
-                            child: Image.asset('assets/icons/icon_download.png', width: 20,),
-                            onPressed: () {
-                              _saveLocalImage();
-                            }
-                          ),
-                        ),
+                        // SizedBox(width: 12),
+                        // Container(
+                        //   width: 40,
+                        //   height: 40,
+                        //   decoration: BoxDecoration(
+                        //     borderRadius: BorderRadius.circular(8),
+                        //     color: Color.fromRGBO(35, 36, 41, 1),
+                        //     border: Border.all(color: Color.fromRGBO(53, 54, 60, 1), width: 1)
+                        //   ),
+                        //   child: ElevatedButton(
+                        //     style: ElevatedButton.styleFrom(
+                        //       overlayColor: Colors.white,
+                        //       shadowColor: Colors.transparent,
+                        //       padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        //       elevation: 0, // 阴影
+                        //       backgroundColor: Colors.transparent,
+                        //       shape: BeveledRectangleBorder(
+                        //         borderRadius: BorderRadius.circular(4)
+                        //       )
+                        //     ),
+                        //     child: Image.asset('assets/icons/icon_download.png', width: 20,),
+                        //     onPressed: () {
+                        //       _saveLocalImage();
+                        //     }
+                        //   ),
+                        // ),
                       ],
                     )
                   ),
@@ -420,8 +420,8 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
     ui.Image image = await boundary.toImage(pixelRatio: ui.window.devicePixelRatio);
     ByteData? byteData = await (image.toByteData(format: ui.ImageByteFormat.png));
     if (byteData != null) {
-      final result = await ImageGallerySaver.saveImage(byteData.buffer.asUint8List());
-      String statusText = result['isSuccess'] ? 'Successfully' : 'Failed';
+      // final result = await ImageGallerySaver.saveImage(byteData.buffer.asUint8List());
+      // String statusText = result['isSuccess'] ? 'Successfully' : 'Failed';
       showDialog(
         context: context,
         useSafeArea: false,
@@ -435,12 +435,12 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                   color: Color.fromRGBO(15, 15, 18, 1),
                   borderRadius: BorderRadius.circular(16)
                 ),
-                child: Text('Saved to Album $statusText', style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  decoration: TextDecoration.none
-                )),
+                // child: Text('Saved to Album $statusText', style: TextStyle(
+                //   color: Colors.white,
+                //   fontSize: 16,
+                //   fontWeight: FontWeight.w500,
+                //   decoration: TextDecoration.none
+                // )),
               )
             )
           ],

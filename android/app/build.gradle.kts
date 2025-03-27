@@ -6,6 +6,34 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        create("keystore") {
+            keyAlias = "key_mining"
+            keyPassword = "112233"
+            storeFile = file("key_mining.jks")
+            storePassword = "112233"
+        }
+    }
+    buildTypes {
+        val signConfig = signingConfigs.getByName("keystore")
+        getByName("release") {
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rule.pro"
+            )
+            signingConfig = signConfig
+        }
+        getByName("debug") {
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rule.pro"
+            )
+            signingConfig = signConfig
+        }
+    }
+
     namespace = "com.example.flutter_mining"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
