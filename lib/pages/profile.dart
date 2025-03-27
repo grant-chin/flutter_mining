@@ -23,7 +23,7 @@ class ProfileView extends StatefulWidget {
 }
 
 class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStateMixin {
-  GlobalKey _globalKey = GlobalKey();
+  List globalKeys = [];
 
 	@override
 	Widget build(BuildContext context) {
@@ -312,6 +312,8 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
         crossAxisSpacing: 16, // 纵向间距？
         itemCount: nftList.length, // 元素个数
         itemBuilder: (context, index) {
+          GlobalKey _globalKey = GlobalKey();
+          globalKeys.add(_globalKey);
           return SizedBox(
             child: Container(
               padding: EdgeInsets.all(14),
@@ -399,7 +401,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                         //     ),
                         //     child: Image.asset('assets/icons/icon_download.png', width: 20,),
                         //     onPressed: () {
-                        //       _saveLocalImage();
+                        //       _saveLocalImage(index);
                         //     }
                         //   ),
                         // ),
@@ -415,8 +417,8 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
     );
   }
 
-  _saveLocalImage() async {
-    RenderRepaintBoundary boundary = _globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+  _saveLocalImage(index) async {
+    RenderRepaintBoundary boundary = globalKeys[index].currentContext!.findRenderObject() as RenderRepaintBoundary;
     ui.Image image = await boundary.toImage(pixelRatio: ui.window.devicePixelRatio);
     ByteData? byteData = await (image.toByteData(format: ui.ImageByteFormat.png));
     if (byteData != null) {
