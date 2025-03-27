@@ -24,14 +24,6 @@ android {
             )
             signingConfig = signConfig
         }
-        getByName("debug") {
-            isMinifyEnabled = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rule.pro"
-            )
-            signingConfig = signConfig
-        }
     }
 
     namespace = "com.SimuPool.SimuPool"
@@ -58,13 +50,6 @@ android {
         versionName = flutter.versionName
     }
 
-    buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
-        }
-    }
     android {
         ndkVersion = "27.0.12077973"
     }

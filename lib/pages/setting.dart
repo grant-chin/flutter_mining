@@ -25,9 +25,11 @@ class SettingView extends StatelessWidget {
           Column(
             children: [
               linkItem('Policy privacy', (){
-                // launchUrl(Uri.parse(''));
+                launchUrl(Uri.parse('https://www.freeprivacypolicy.com/live/f8f77e38-89e6-4d25-85bb-25809cac41c9'));
               }),
-              linkItem('Terms of service', (){}),
+              linkItem('Terms of service', (){
+                launchUrl(Uri.parse('https://www.freeprivacypolicy.com/live/2d59955b-496a-4833-8b7d-52266a5b8936'));
+              }),
               // linkItem('Clear Cache', (){ Global.clear(); }),
             ],
           ),
