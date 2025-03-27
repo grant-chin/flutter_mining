@@ -236,57 +236,60 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
             // height: 50,
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                InkWell(
-                  onTap: () {
-                    Navigator.pushNamed(context, 'profile').then((value) {
-                      setState(() => avator = Global.avator);
-                      if (value == 'item') {
-                        widget.toTab(0);
-                      }
-                    });
-                  },
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 50,
-                        height: 50,
-                        clipBehavior: Clip.hardEdge,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey, width: 1),
-                          borderRadius: BorderRadius.circular(50)
+                Expanded(
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, 'profile').then((value) {
+                        setState(() => avator = Global.avator);
+                        if (value == 'item') {
+                          widget.toTab(0);
+                        }
+                      });
+                    },
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 50,
+                          height: 50,
+                          clipBehavior: Clip.hardEdge,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey, width: 1),
+                            borderRadius: BorderRadius.circular(50)
+                          ),
+                          child: ClipOval(
+                            child: Image.asset(avator, fit: BoxFit.cover),
+                          )
                         ),
-                        child: ClipOval(
-                          child: Image.asset(avator, fit: BoxFit.cover),
-                        )
-                      ),
-                      SizedBox(width: 16),
-                      SizedBox(
-                        width: 120,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text('Liam xaffizme', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                            Container(
-                              margin: const EdgeInsets.fromLTRB(0, 6, 0, 0),
-                              padding: const EdgeInsets.fromLTRB(8, 2, 8, 2),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(4),
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [Color.fromRGBO(112, 21, 239, 0.4), Color.fromRGBO(92, 81, 255, 0.4)]
-                                )
+                        SizedBox(width: 12),
+                        SizedBox(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text('Liam xaffizme', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                              Container(
+                                margin: const EdgeInsets.fromLTRB(0, 6, 0, 0),
+                                padding: const EdgeInsets.fromLTRB(8, 2, 8, 2),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(4),
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [Color.fromRGBO(112, 21, 239, 0.4), Color.fromRGBO(92, 81, 255, 0.4)]
+                                  )
+                                ),
+                                child: Text('Lvl $_level', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 12)),
                               ),
-                              child: Text('Lvl $_level', style: TextStyle(color: Color.fromRGBO(249, 249, 249, 0.8), fontSize: 12)),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-                Expanded(
+                SizedBox(
+                  width: 180,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
@@ -319,7 +322,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                           ),
                           Positioned(
                             child: Container(
-                              width: _exp / 200 * 190 + 8,
+                              width: _exp / 200 * 180 + 8,
                               height: 8,
                               margin: EdgeInsets.all(2),
                               decoration: BoxDecoration(
@@ -329,7 +332,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                             )
                           ),
                           Positioned(
-                            left: _exp / 200 * 190,
+                            left: _exp / 200 * 180,
                             child: Container(
                               width: 4,
                               height: 4,

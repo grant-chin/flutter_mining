@@ -133,7 +133,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                             ),
                             Positioned(
                               child: Container(
-                                width: _exp / 200 * 190 + 8,
+                                width: _exp / 200 * (MediaQuery.of(context).size.width - 64) + 8,
                                 height: 8,
                                 margin: EdgeInsets.all(2),
                                 decoration: BoxDecoration(
@@ -143,7 +143,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                               )
                             ),
                             Positioned(
-                              left: _exp / 200 * 190,
+                              left: _exp / 200 * (MediaQuery.of(context).size.width - 64),
                               child: Container(
                                 width: 4,
                                 height: 4,
