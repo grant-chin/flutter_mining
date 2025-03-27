@@ -10,7 +10,7 @@ List<String> get claimedArr => Global.weekSignedTimes; // 周签到时间
 bool isSignedToday = Global.isSignedToday; // 今日是否已签到
 bool isRate = Global.isRate; // 是否评价
 bool successRated = false; // 是否成功完成评价
-bool isShared = Global.isShared; // 是否分享
+int sharedTimes = Global.sharedTimes; // 成功分享次数
 bool successShared = false; // 是否成功完成分享
 int get mintTimes => Global.mintTimes; // 已铸造次数
 List<String> get nftList => Global.nftList; // 已经获取的NFT列表
@@ -74,7 +74,7 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
       setState(() => successShared = false);
       _showDialog(2, 'Speread the Joy!', 25, () {
         Global.receiveShareAward();
-        setState(() => isShared = Global.isShared);
+        setState(() => sharedTimes = Global.sharedTimes);
       });
     }
   }
@@ -335,9 +335,9 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                       // 分享
                       taskItem(
                         'assets/images/tasks/icon_clap.png',
-                        'Invite friends',
+                        'Invite friends ($sharedTimes/20)',
                         'Successfully shared once +25',
-                        isShared ? 'Claimed' : 'Share',
+                        sharedTimes == 20 ? 'Claimed' : 'Share',
                         _toShare
                       ),
                       // 3次铸造成功成就

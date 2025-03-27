@@ -39,7 +39,7 @@ class Global {
   static bool isSignedToday = false; // 今日是否已签到
 
   static bool isRate = false; // 是否评价
-  static bool isShared = false; // 是否分享
+  static int sharedTimes = 0; // 成功分享次数
   static bool isClaimActivePioneer = false; // 是否已领取铸造先锋奖励
   static bool isClaimGoalAchiever = false; // 是否已领取NFT铸造成功成就
   static bool isClaimPowerExpert = false; // 是否已领取铸造专家成就
@@ -141,7 +141,7 @@ class Global {
   // 初始化成就任务列表
   static initTaskList() {
     isRate = _prefs.getBool('isRate') ?? false;
-    isShared = _prefs.getBool('isShared') ?? false;
+    sharedTimes = _prefs.getInt('sharedTimes') ?? 0;
     isClaimActivePioneer = _prefs.getBool('isClaimActivePioneer') ?? false;
     isClaimGoalAchiever = _prefs.getBool('isClaimGoalAchiever') ?? false;
     isClaimPowerExpert = _prefs.getBool('isClaimPowerExpert') ?? false;
@@ -319,8 +319,8 @@ class Global {
   // 领取分享奖励
   static receiveShareAward() {
     increaseExp(25);
-    isShared = true;
-    _prefs.setBool('isShared', true);
+    sharedTimes += 1;
+    _prefs.setInt('sharedTimes', sharedTimes);
   }
   // 领取3次铸造成功成就奖励
   static receiveMineAward_3() {

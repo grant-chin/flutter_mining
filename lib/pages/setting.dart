@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 // import 'package:flutter_mining/common/Global.dart';
 
 
@@ -23,7 +24,9 @@ class SettingView extends StatelessWidget {
           ),
           Column(
             children: [
-              linkItem('Policy privacy', (){}),
+              linkItem('Policy privacy', (){
+                // launchUrl(Uri.parse(''));
+              }),
               linkItem('Terms of service', (){}),
               // linkItem('Clear Cache', (){ Global.clear(); }),
             ],
